@@ -14,6 +14,11 @@ import Admin from './Components/LayoutAdmin/LayoutAdmin'
 import DashBoard from './Components/Dashboard/DashBoard'
 import LayOutAdmin from './Components/Layout/LayOutAdmin'
 import CreateCategory from './Components/CreateCategory/CreateCategory'
+import CreateBrand from './Components/CreateBrand/CreateBrand'
+import ProductListPage from './Components/Product/Product'
+import Brands from './Components/Brands/Brands'
+import Cart from './Components/Cart/Cart'
+import Profile from './Components/Profile/Profile'
 
 
 function App() {
@@ -43,6 +48,18 @@ function App() {
         {
           path: "/Subcategory/:id",
           element: <SubCategory />,
+        },{
+          path:"product",
+          element: <ProductListPage />,
+        },{
+          path:"/brand",
+          element:<Brands/>
+        },{
+          path:"/cart",
+          element:<Cart/>
+        },{
+          path:"/profile",
+          element:<Profile/>
         },
         {
           path:"/layoutAdmin",
@@ -53,6 +70,10 @@ function App() {
             },{
               path: "createCategory",
               element: <CreateCategory />, 
+            },{
+              path:"createBrand",
+              element: <CreateBrand />,
+
             },
             {
         }

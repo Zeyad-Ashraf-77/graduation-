@@ -53,13 +53,14 @@
   }
 }
 .active{
-  background-color: #9e0e0e;
+  background-color: #a9690a;
   color: #fff;
   border-radius: 5px;
   padding: 5px;
   font-weight: bold;
   text-align: center;
   text-decoration: none;
+  /* box-shadow: 5px 5px 5px rgb(219, 169, 20); */
 }
 body{
   background-color: #e7e1d5;
@@ -69,6 +70,9 @@ body{
 }
 .container {
   width: 90%;
+}
+.hero{
+  background-attachment: fixed;
 }
 .cardCategory:hover .btn {
   transform: translateY(0);
@@ -132,4 +136,13 @@ body{
   background-size: cover;
   /* background-attachment: fixed; */
   background-position: center;
+}
+.trash{
+  transform: translateX(200%);
+  opacity: 0;
+  transition: all 0.3s ease-in ;
+}
+.li-trash:hover .trash{
+  transform: translateX(0%);
+  opacity: 1;
 }

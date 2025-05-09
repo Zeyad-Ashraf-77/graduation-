@@ -11,7 +11,7 @@ export default function Layout() {
       <div className=" mx-auto">
         <Outlet />
       </div>
-      {/* <Footer /> */}
+      <Footer />
     </>
   );
 }

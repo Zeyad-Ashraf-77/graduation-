@@ -29,7 +29,7 @@ export default function Category() {
 
   return (
     <>
-      <div className="p-28 bg-[url('/src/assets/images/wooden-art-pieces-painting-process.jpg')] bg-slate-900 text-white text-center " >
+      <div className="py-32 bg-[url('/src/assets/images/pin/category.jpg')]  hero bg-cover bg-center bg-slate-900 text-white text-center " >
         <h1>Cadiz Collection</h1>
         <p className="mt-2 " >Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
       </div>
@@ -48,7 +48,7 @@ export default function Category() {
             <a href="#">
                 <h5 className="mb-2 text-white text-2xl font-bold tracking-tight  dark:text-white">{c.name.toUpperCase()}</h5>
             </a>
-            <Link to={`/Subcategory/${c._id}`}className="inline-flex btn items-center w-full text-center  px-3 py-2 text-sm font-medium mx-auto text-white bg-amber-800 rounded-lg hover:bg-amber-500 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+            <Link to={`/Subcategory/${c.name}`}className="inline-flex btn items-center w-full text-center  px-3 py-2 text-sm font-medium mx-auto text-white bg-amber-800 rounded-lg hover:bg-amber-500 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                 Browse
             </Link>
         </div>
