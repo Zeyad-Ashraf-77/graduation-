@@ -4,7 +4,7 @@ import axios from "axios";
 import { FormValues } from "../Interfaces/Interfaces";
 import * as Yup from "yup";
 import { Link, useNavigate } from "react-router-dom";
-import { UserContext } from "../Context/UserContext";
+
 
 export default function Register() {
   const [apiError, setApiError] = useState("");

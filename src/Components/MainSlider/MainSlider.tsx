@@ -50,11 +50,11 @@ export default function MainSlider() {
           {brands.map((brand) => (
             <div key={brand._id} className="h-[350px] flex items-center justify-center">
               <div className="flex w-full h-full bg-gradient-to-r from-yellow-100 via-amber-100 to-yellow-200 rounded-2xl shadow-2xl overflow-hidden">
-                <div className="w-[55%] h-[350px] flex items-center justify-center bg-gradient-to-br from-amber-200 to-yellow-400">
+                <div className="w-[100%] h-[350px] flex items-center justify-center bg-gradient-to-br from-amber-200 to-yellow-400">
                   {brand.image?.secure_url ? (
                     <img
                       src={brand.image.secure_url}
-                      className="rounded-full border-8 border-yellow-900 shadow-xl object-cover w-80 h-80 transition-transform duration-500 hover:scale-105"
+                      className=" w-full rounded-2xl h-full border-2 bg-center  border-yellow-900 shadow-xl object-cover  transition-transform duration-500 hover:scale-105"
                       alt={brand.name}
                     />
                   ) : (
