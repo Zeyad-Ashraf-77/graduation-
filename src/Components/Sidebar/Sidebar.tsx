@@ -39,6 +39,13 @@ export default function Sidebar() {
                    </span>
                 </NavLink>
              </li>
+             <li>
+                <NavLink to="/layOutAdmin/createSubCategory" className="flex items-center mt-4 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+               
+                   <span className="ms-3 flex gap-1 items-center "> <SiBrandfolder className='text-2xl' /> CreateSubCategory
+                   </span>
+                </NavLink>
+             </li>
              
           </ul>
        </div>

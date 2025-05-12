@@ -37,3 +37,13 @@ export interface CategoryType {
   image: string;
   secure_url: string;
 }
+ 
+ export interface Product {
+    _id: string;
+    name: string;
+    price: number;
+    rate: number;
+    imageCover: {
+      secure_url: string;
+    };
+  }

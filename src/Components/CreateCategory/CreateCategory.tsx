@@ -1,17 +1,17 @@
-
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import image from '../../assets/images/download (11).jpeg'
 
 // Define Types for Category and Form values
 interface Category {
   _id: string;
   name: string;
-  image: {
-    secure_url: string;
-  };
+  secure_url: string;
 }
 
 interface FormValues {
@@ -29,30 +29,88 @@ const validationSchema = Yup.object({
 
 export default function CreateCategory() {
   const navigate = useNavigate();
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState([]);
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
 
   // Fetch all categories
-  const getCategories = async () => {
-    try {
-      const { data } = await axios.get("https://project1-kohl-iota.vercel.app/category", {
-        headers: { Authorization: localStorage.getItem("authorization") || "" },
-      });
-      setCategories(data.categories);
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-    }
-  };
+async function getCategories(){
+  try {
+    const {data} = await axios.get("https://project1-kohl-iota.vercel.app/category",{
+      headers:{
+        Authorization: localStorage.getItem("authorization") || "",
+      },
+    });
+    console.log('First category object:', data.categories); // Debug: print first category
+    setCategories(data.categories);
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+  }
+}
 
   // Delete category
   const deleteCategory = async (id: string) => {
     try {
-      await axios.delete(`https://project1-kohl-iota.vercel.app/category/delete/${id}`, {
-        headers: { Authorization: localStorage.getItem("authorization") || "" },
-      });
+      setIsLoading(true);
+      await axios.delete(
+        `https://project1-kohl-iota.vercel.app/category/delete/${id}`,
+        {
+          headers: {
+            Authorization: localStorage.getItem("authorization") || "",
+          },
+        }
+      );
       getCategories(); // Refresh category list after deletion
     } catch (error) {
       console.error("Error deleting category:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Update category
+  const handleUpdate = async (values: FormValues) => {
+    if (!editingCategory) return;
+
+    const formData = new FormData();
+    formData.append("name", values.name);
+    if (values.image) {
+      formData.append("file", values.image);
+    }
+
+    try {
+      setIsLoading(true);
+      const response = await axios.patch(
+        `https://project1-kohl-iota.vercel.app/category/update/${editingCategory._id}`,
+        formData,
+        {
+          headers: {
+            Authorization: localStorage.getItem("authorization") || "",
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      console.log("Category updated:", response.data);
+      await getCategories();
+      setEditingCategory(null);
+      setErrorMessage("");
+      alert("Category updated successfully!");
+    } catch (error: any) {
+      console.error("Error updating category:", error);
+      if (error.response) {
+        setErrorMessage(
+          error.response.data.message || "Error updating category. Please try again."
+        );
+      } else if (error.request) {
+        setErrorMessage(
+          "No response from server. Please check your internet connection."
+        );
+      } else {
+        setErrorMessage("Error setting up the request. Please try again.");
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -60,9 +118,10 @@ export default function CreateCategory() {
   const handleSubmit = async (values: FormValues) => {
     const formData = new FormData();
     formData.append("name", values.name);
-    formData.append("image", values.image!); // Non-null assertion since image is required
+    formData.append("file", values.image!);
 
     try {
+      setIsLoading(true);
       const response = await axios.post(
         "https://project1-kohl-iota.vercel.app/category/create",
         formData,
@@ -73,11 +132,59 @@ export default function CreateCategory() {
           },
         }
       );
-      console.log("Category created:", response.data);
-      navigate("/categories"); // Redirect after successful creation
-    } catch (error) {
+      console.log("Category created response:", response.data);
+
+      // استدعاء الفنكشن لجلب الكاتيجوريز بعد الإنشاء
+      await getCategories();
+
+      // إعادة تعيين القيم
+      values.name = "";
+      values.image = null;
+      setErrorMessage("");
+
+      // إظهار إشعار النجاح باستخدام التوستر
+      toast.success("Category created successfully!", {
+        position: "bottom-right", // يظهر في أسفل اليمين
+        autoClose: 3000, // يغلق الإشعار تلقائيًا بعد 3 ثوانٍ
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+    } catch (error: any) {
       console.error("Error creating category:", error);
-      setErrorMessage("Error creating category. Please try again.");
+
+      // التعامل مع الأخطاء
+      if (error.response) {
+        setErrorMessage(
+          error.response.data.message || "Error creating category. Please try again."
+        );
+      } else if (error.request) {
+        setErrorMessage(
+          "No response from server. Please check your internet connection."
+        );
+      } else {
+        setErrorMessage("Error setting up the request. Please try again.");
+      }
+
+      // إظهار إشعار الخطأ باستخدام التوستر
+      toast.error(
+        "Error creating category. Please try again.",
+        {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        }
+      );
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -85,104 +192,171 @@ export default function CreateCategory() {
     getCategories();
   }, []);
 
-  return (
-    <>
-      {/* Create New Category Form */}
-      <div className="max-w-xl mx-auto bg-white shadow-lg p-6 mt-32 rounded-lg">
-        <h2 className="text-2xl font-bold mb-4 text-gray-800">Create New Category</h2>
-        {errorMessage && <div className="text-red-500 text-sm mb-3">{errorMessage}</div>}
-
-        <Formik
-          initialValues={{
-            name: "",
-            image: null,
-          }}
-          validationSchema={validationSchema}
-          onSubmit={handleSubmit}
-        >
-          {({ setFieldValue, errors, touched, values }) => (
-            <Form className="space-y-4">
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                  Category Name
-                </label>
-                <Field
-                  type="text"
-                  id="name"
-                  name="name"
-                  className="w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Enter category name"
-                />
-                <ErrorMessage name="name" component="div" className="text-red-500 text-sm" />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Category Image</label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="block w-full text-sm text-gray-700 border border-gray-300 rounded-md p-2 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-blue-500 file:text-white hover:file:bg-blue-600"
-                  onChange={(event) => setFieldValue("image", event.currentTarget.files![0])}
-                />
-                <ErrorMessage name="image" component="div" className="text-red-500 text-sm" />
-                {/* Preview placeholder */}
-                <div className="mt-3 h-32 bg-gray-100 rounded flex items-center justify-center text-gray-400">
-                  {values.image ? values.image.name : "Image preview here"}
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md transition"
-              >
-                Create Category
-              </button>
-            </Form>
-          )}
-        </Formik>
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="loader"></div>
       </div>
+    );
+  }
+  return (
+    <div className="min-h-screen mt-16 bg-[#efebd9] py-8">
+      {/* Create/Update Category Form */}
+      <div className="max-w-4xl mx-auto px-4">
+        <div className="bg-[#efebd9] shadow-xl shadow-amber-400 rounded-2xl p-8 mb-12">
+          <h2 className="font-bold mb-6 text-[#4e342e] text-center">
+            {editingCategory ? "Update Category" : "Create New Category"}
+          </h2>
+          {errorMessage && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+              {errorMessage}
+            </div>
+          )}
 
-      {/* All Categories Section */}
-      <div className="mt-10 container mx-auto">
-        <h2 className="text-center">All Categories</h2>
+          <Formik
+            initialValues={{
+              name: editingCategory?.name || "",
+              image: null,
+            }}
+            validationSchema={validationSchema}
+            onSubmit={editingCategory ? handleUpdate : handleSubmit}
+            enableReinitialize
+          >
+            {({ setFieldValue, values }) => (
+              <Form className="space-y-6">
+                <div>
+                  <label
+                    htmlFor="name"
+                    className="block text-lg font-semibold text-[#4e342e] mb-2"
+                  >
+                    Category Name
+                  </label>
+                  <Field
+                    type="text"
+                    id="name"
+                    name="name"
+                    className="w-full border-2 border-[#4e342e] rounded-lg p-3 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
+                    placeholder="Enter category name"
+                  />
+                  <ErrorMessage
+                    name="name"
+                    component="div"
+                    className="text-red-500 text-sm mt-1"
+                  />
+                </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5 mt-10">
-          {categories.map((category) => (
-            <div
-              key={category._id}
-              className="max-w-sm cardCategory bg-black/30 hover:scale-105 duration-150 text-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700"
-            >
-              <a href="#">
-                <img
-                  src={category.image.secure_url}
-                  className="rounded-t-lg w-full max-h-[200px] object-cover"
-                  alt={category.name}
-                />
-              </a>
-              <div className="p-5">
-                <a href="#">
-                  <h5 className="mb-2 text-white text-2xl font-bold tracking-tight dark:text-white">
+                <div>
+                  <label className="block text-lg font-semibold text-[#4e342e] mb-2">
+                    Category Image
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="block w-full text-sm text-[#4e342e] border-2 border-[#4e342e] rounded-lg p-3 file:mr-4 file:py-2 file:px-6 file:rounded-lg file:border-0 file:bg-[#4e342e] file:text-white hover:file:bg-[#6d4c41] transition"
+                    onChange={(event) => {
+                      const file = event.currentTarget.files![0];
+                      console.log("Selected file:", file);
+                      setFieldValue("image", file);
+                    }}
+                  />
+                  <ErrorMessage
+                    name="image"
+                    component="div"
+                    className="text-red-500 text-sm mt-1"
+                  />
+                  <div className="mt-4 h-48 bg-white rounded-lg flex items-center justify-center border-2 border-dashed border-[#4e342e]">
+                    {values.image ? (
+                      <div className="text-center">
+                        <p className="text-[#4e342e]">
+                          Selected: {(values.image as File).name}
+                        </p>
+                      </div>
+                    ) : (
+                      editingCategory?.secure_url ? (
+                        <img
+                          src={editingCategory.secure_url}
+                          alt="Current category image"
+                          className="max-h-full max-w-full object-contain"
+                        />
+                      ) : (
+                        <p className="text-[#4e342e]">
+                          Image preview will appear here
+                        </p>
+                      )
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <button
+                    type="submit"
+                    className="flex-1 bg-[#4e342e] hover:bg-[#6d4c41] text-white py-3 px-6 rounded-lg text-lg font-semibold transition duration-300 transform hover:scale-[1.02]"
+                  >
+                    {editingCategory ? "Update Category" : "Create Category"}
+                  </button>
+                  {editingCategory && (
+                    <button
+                      type="button"
+                      onClick={() => setEditingCategory(null)}
+                      className="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-3 px-6 rounded-lg text-lg font-semibold transition duration-300 transform hover:scale-[1.02]"
+                    >
+                      Cancel
+                    </button>
+                  )}
+                </div>
+              </Form>
+            )}
+          </Formik>
+        </div>
+
+        {/* All Categories Section */}
+        <div className="bg-[#efebd9] shadow-amber-300 shadow-xl rounded-2xl p-8">
+          <h2 className="text-3xl font-bold mb-8 text-[#4e342e] text-center">
+            All Categories
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {categories.map((category) => (
+              <div
+                key={category._id}
+                className="bg-white rounded-xl shadow-lg overflow-hidden transform transition duration-300 hover:scale-[1.02] hover:shadow-xl"
+              >
+                <div className="">
+                  <img
+                  src={category.image.secure_url || image}
+
+                    className="w-full h-48 object-cover"
+                    alt={category.name}
+             
+                  />
+                  
+                </div>
+                <div className="p-6">
+                  <h5 className="text-xl font-bold text-[#4e342e] mb-4">
                     {category.name.toUpperCase()}
                   </h5>
-                </a>
-                <button
-                  type="button"
-                  onClick={() => deleteCategory(category._id)}
-                  className="focus:outline-none w-full cursor-pointer text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
-                >
-                  Delete
-                </button>
-                <button
-                  type="button"
-                  className="focus:outline-none w-full text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-                >
-                  Update
-                </button>
+                  <div className="space-y-3">
+                    <button
+                      type="button"
+                      onClick={() => deleteCategory(category._id)}
+                      className="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg font-medium transition duration-300"
+                    >
+                      Delete
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setEditingCategory(category)}
+                      className="w-full bg-[#4e342e] hover:bg-[#6d4c41] text-white py-2 px-4 rounded-lg font-medium transition duration-300"
+                    >
+                      Update
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }

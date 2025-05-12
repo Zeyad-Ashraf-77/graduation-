@@ -1,72 +1,77 @@
-import React from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-const brands = [
-  {
-    name: "Artisan Creations",
-    description: "Handcrafted goods made with care",
-    image: "🖐️",
-  },
-  {
-    name: "Handmade Haven",
-    description: "Unique handmade treasures",
-    image: "🌸",
-  },
-  {
-    name: "The Artisan Studio",
-    description: "Handmade with love and skill",
-    image: "🧶",
-  },
-  {
-    name: "Rustic Crafts",
-    description: "Rustic and charming handmade items",
-    image: "❄️",
-  },
-  {
-    name: "Creative Hands",
-    description: "Creative and unique crafts",
-    image: "✋",
-  },
-  {
-    name: "Artisan Alley",
-    description: "Handcrafted artisan products",
-    image: "🏺",
-  },
-  {
-    name: "Maker’s Market",
-    description: "Handmade goods from local makers",
-    image: "🧵",
-  },
-  {
-    name: "Handcrafted Joy",
-    description: "Bringing joy through handmade goods",
-    image: "❤️",
-  },
-  {
-    name: "Artistry Unlocked",
-    description: "Unlocking creativity through crafts",
-    image: "🌼",
-  },
-];
+interface Brand {
+  _id: string;
+  name: string;
+  description?: string;
+  image?: { secure_url: string };
+}
 
 const Brands = () => {
+  const [brands, setBrands] = useState<Brand[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    axios
+      .get("https://project1-kohl-iota.vercel.app/brand", {
+        headers: { Authorization: localStorage.getItem("authorization") || "" },
+      })
+      .then((res) => setBrands(res.data.brands))
+      .catch(() => setBrands([]))
+      .finally(() => setIsLoading(false));
+  }, []);
+
   return (
     <div className="bg-beige min-h-screen mt-20 py-10 px-4 md:px-10">
       <h1 className="text-3xl md:text-4xl font-bold text-center mb-10">البراندات</h1>
-      <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
-        {brands.map((brand, index) => (
-          <div
-            key={index}
-            className="bg-white p-6 rounded-2xl shadow-amber-400 shadow-md flex flex-col items-center text-center"
-          >
-            <div className="text-5xl mb-4">{brand.image}</div>
-            <h2 className="text-xl font-semibold mb-2">{brand.name}</h2>
-            <p className="text-gray-600 mb-4 text-sm">{brand.description}</p>
-            <button className="bg-[#a9690a]  text-amber-50 border border-black font-medium px-4 py-2 rounded-lg hover:bg-black hover:text-white transition">
-              Visit Brand
-            </button>
-          </div>
-        ))}
-      </div>
+      {isLoading ? (
+        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+          {/* Placeholder أثناء اللودينج */}
+          {Array.from({ length: 6 }).map((_, index) => (
+            <div
+              key={index}
+              className="bg-gray-300 animate-pulse p-6 rounded-2xl shadow-md flex flex-col items-center text-center"
+            >
+              <div className="mb-4 w-80 h-44 bg-gray-400 rounded"></div>
+              <div className="h-6 bg-gray-400 rounded w-32 mb-2"></div>
+              <div className="h-10 bg-gray-400 rounded w-24"></div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+          {brands.map((brand) => (
+            <div
+              key={brand._id}
+              className="bg-white p-6 rounded-2xl shadow-amber-400 shadow-md flex flex-col items-center text-center"
+            >
+              <div className="mb-4">
+                {brand.image?.secure_url ? (
+                  <img
+                    src={brand.image.secure_url}
+                    alt={brand.name}
+                    className="w-80 h-44 object-cover border-2 border-amber-400 mx-auto"
+                  />
+                ) : (
+                  <div className="w-24 h-24 flex items-center justify-center bg-gray-100 rounded-full text-4xl">
+                    🏷️
+                  </div>
+                )}
+              </div>
+              <h2 className="text-xl font-semibold mb-2">{brand.name}</h2>
+              <button
+                onClick={() => navigate(`/category`)}
+                className="bg-[#a9690a] text-amber-50 border font-medium px-4 py-2 rounded-lg hover:bg-black hover:text-white transition"
+              >
+                Visit Brand
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

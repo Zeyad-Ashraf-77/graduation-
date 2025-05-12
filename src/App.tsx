@@ -19,6 +19,8 @@ import ProductListPage from './Components/Product/Product'
 import Brands from './Components/Brands/Brands'
 import Cart from './Components/Cart/Cart'
 import Profile from './Components/Profile/Profile'
+import CreateSubCategory from './Components/CreateSubCategory/CreateSubCategory'
+import AddProduct from './Components/AddProduct/AddProduct'
 
 
 function App() {
@@ -60,6 +62,9 @@ function App() {
         },{
           path:"/profile",
           element:<Profile/>
+        },{
+          path:"/addProduct",
+          element:<AddProduct/>
         },
         {
           path:"/layoutAdmin",
@@ -73,7 +78,9 @@ function App() {
             },{
               path:"createBrand",
               element: <CreateBrand />,
-
+            },{
+              path:"createSubCategory",
+              element:<CreateSubCategory/>
             },
             {
         }
@@ -87,7 +94,7 @@ function App() {
   return (
     <>
      <RouterProvider router={router}></RouterProvider>
-
+   
     </>
   )
 }

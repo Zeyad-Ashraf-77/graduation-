@@ -1,80 +1,99 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import Slider from "react-slick";
-import image1 from "../../assets/images/shopping.webp";
-// import image2 from "../../assets/images/slider2.jpg";   
-export default function SimpleSlider() {
-    const settings = {
+import axios from "axios";
+
+interface Brand {
+  _id: string;
+  name: string;
+  description?: string;
+  image?: { secure_url: string };
+}
+
+export default function MainSlider() {
+  const [brands, setBrands] = useState<Brand[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    axios
+      .get("https://project1-kohl-iota.vercel.app/brand", {
+        headers: { Authorization: localStorage.getItem("authorization") || "" },
+      })
+      .then((res) => setBrands(res.data.brands))
+      .catch(() => setBrands([]))
+      .finally(() => setIsLoading(false));
+  }, []);
+
+  const settings = {
     dots: true,
     infinite: true,
-    speed: 500,
+    speed: 700,
     slidesToShow: 1,
     autoplay: true,
-    autoplaySpeed: 2000,
+    autoplaySpeed: 2500,
     slidesToScroll: 1,
+    arrows: false,
+    pauseOnHover: true,
   };
+
+  if (isLoading) {
+    return <div className="h-[350px] flex items-center justify-center">Loading...</div>;
+  }
+
   return (
-    <Slider {...settings}>
-      <div className=" h-[500px]">
-        <div className="flex">
-            <div className="w-1/2 h-[500px] flex items-center justify-center">
-               <img src={image1} className="w-full shadow-2xl rounded-l-2xl object-fill object-center max-h-[500px] max-w-[700px] "  alt="" />
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center px-6 py-10">
+
+  
+
+      {/* السلايدر */}
+      <div className="relative">
+        <Slider {...settings}>
+          {brands.map((brand) => (
+            <div key={brand._id} className="h-[350px] flex items-center justify-center">
+              <div className="flex w-full h-full bg-gradient-to-r from-yellow-100 via-amber-100 to-yellow-200 rounded-2xl shadow-2xl overflow-hidden">
+                <div className="w-[55%] h-[350px] flex items-center justify-center bg-gradient-to-br from-amber-200 to-yellow-400">
+                  {brand.image?.secure_url ? (
+                    <img
+                      src={brand.image.secure_url}
+                      className="rounded-full border-8 border-yellow-900 shadow-xl object-cover w-80 h-80 transition-transform duration-500 hover:scale-105"
+                      alt={brand.name}
+                    />
+                  ) : (
+                    <div className="w-80 h-80 flex items-center justify-center bg-gray-200 rounded-full text-7xl border-8 border-yellow-900 shadow-xl">
+                      🏷️
+                    </div>
+                  )}
+                </div>
+             
+              </div>
             </div>
-            <div className="w-1/2 h-[500px] p-10 my-auto  shadow-2xl rounded-r-2xl bg-yellow-900 flex items-center justify-center">
-                <h5 className="text-white" >Lorem ipsum dolor sit amet consectetur adipisicing elit. Nobis nemo obcaecati, sunt praesentium architecto aliquid consectetur inventore fugit dolorem ut  architecto eum, sed neque veniam libero illum maiores, praesentium laboriosam?</h5>
-            </div>
-        </div>
-     
+          ))}
+        </Slider>
+        {/* Decorative Glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] h-[70%] rounded-2xl bg-yellow-200 opacity-30 blur-2xl z-0"></div>
       </div>
-      <div className=" h-[500px]">
-      <div className="flex">
-            <div className="w-1/2 h-[500px] flex items-center justify-center">
-               <img src={image1} className="w-full shadow-2xl rounded-l-2xl object-fill object-center max-h-[500px] max-w-[700px] "  alt="" />
-            </div>
-            <div className="w-1/2 h-[500px] p-10 my-auto  shadow-2xl rounded-r-2xl bg-yellow-900 flex items-center justify-center">
-                <h5 className="text-white" >Lorem ipsum dolor sit amet consectetur adipisicing elit. Nobis nemo obcaecati, sunt praesentium architecto aliquid consectetur inventore fugit dolorem ut  architecto eum, sed neque veniam libero illum maiores, praesentium laboriosam?</h5>
-            </div>
-        </div>
+            {/* الصور الثابتة */}
+          <div className="grid grid-cols-2 gap-4">
+        <img
+          src="/src/assets/images/static1.jpg"
+          alt="Static 1"
+          className="w-full h-44 object-cover rounded-lg shadow-md"
+        />
+        <img
+          src="/src/assets/images/static2.jpg"
+          alt="Static 2"
+          className="w-full h-44 object-cover rounded-lg shadow-md"
+        />
+        <img
+          src="/src/assets/images/static3.jpg"
+          alt="Static 3"
+          className="w-full h-44 object-cover rounded-lg shadow-md"
+        />
+        <img
+          src="/src/assets/images/static4.jpg"
+          alt="Static 4"
+          className="w-full h-44 object-cover rounded-lg shadow-md"
+        />
       </div>
-      <div className=" h-[500px]">
-      <div className="flex">
-            <div className="w-1/2 h-[500px] flex items-center justify-center">
-               <img src={image1} className="w-full shadow-2xl rounded-l-2xl object-fill object-center max-h-[500px] max-w-[700px] "  alt="" />
-            </div>
-            <div className="w-1/2 h-[500px] p-10 my-auto  shadow-2xl rounded-r-2xl bg-yellow-900 flex items-center justify-center">
-                <h5 className="text-white" >Lorem ipsum dolor sit amet consectetur adipisicing elit. Nobis nemo obcaecati, sunt praesentium architecto aliquid consectetur inventore fugit dolorem ut  architecto eum, sed neque veniam libero illum maiores, praesentium laboriosam?</h5>
-            </div>
-        </div>
-      </div>
-      <div className=" h-[500px]">
-         <div className="flex">
-            <div className="w-1/2 h-[500px] flex items-center justify-center">
-               <img src={image1} className="w-full shadow-2xl rounded-l-2xl object-fill object-center max-h-[500px] max-w-[700px] "  alt="" />
-            </div>
-            <div className="w-1/2 h-[500px] p-10 my-auto  shadow-2xl rounded-r-2xl bg-yellow-900 flex items-center justify-center">
-                <h5 className="text-white" >Lorem ipsum dolor sit amet consectetur adipisicing elit. Nobis nemo obcaecati, sunt praesentium architecto aliquid consectetur inventore fugit dolorem ut  architecto eum, sed neque veniam libero illum maiores, praesentium laboriosam?</h5>
-            </div>
-        </div>
-      </div>
-      <div className=" h-[500px]">
-      <div className="flex">
-            <div className="w-1/2 h-[500px] flex items-center justify-center">
-               <img src={image1} className="w-full shadow-2xl rounded-l-2xl object-fill object-center max-h-[500px] max-w-[700px] "  alt="" />
-            </div>
-            <div className="w-1/2 h-[500px] p-10 my-auto  shadow-2xl rounded-r-2xl bg-yellow-900 flex items-center justify-center">
-                <h5 className="text-white" >Lorem ipsum dolor sit amet consectetur adipisicing elit. Nobis nemo obcaecati, sunt praesentium architecto aliquid consectetur inventore fugit dolorem ut  architecto eum, sed neque veniam libero illum maiores, praesentium laboriosam?</h5>
-            </div>
-        </div>
-      </div>
-      <div className=" h-[500px]">
-      <div className="flex">
-            <div className="w-1/2 h-[500px] flex items-center justify-center">
-               <img src={image1} className="w-full shadow-2xl rounded-l-2xl object-fill object-center max-h-[500px] max-w-[700px] "  alt="" />
-            </div>
-            <div className="w-1/2 h-[500px] p-10 my-auto  shadow-2xl rounded-r-2xl bg-yellow-900 flex items-center justify-center">
-                <h5 className="text-white" >Lorem ipsum dolor sit amet consectetur adipisicing elit. Nobis nemo obcaecati, sunt praesentium architecto aliquid consectetur inventore fugit dolorem ut  architecto eum, sed neque veniam libero illum maiores, praesentium laboriosam?</h5>
-            </div>
-        </div>
-      </div>
-    </Slider>
+    </div>
   );
 }
