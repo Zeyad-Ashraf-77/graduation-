@@ -37,7 +37,7 @@ export default function Category() {
       </div>
 
       {/* Categories Section */}
-      <div className="mt-10 container mx-auto">
+      <div className="mt-10 container mx-auto light:bg-yellow-500 p-10 rounded-2xl dark:bg-gray-800 ">
         <h2 className="text-center text-3xl font-bold mb-6 dark:text-amber-500">
           Browse Categories
         </h2>
@@ -61,7 +61,7 @@ export default function Category() {
               category.map((c: CategoryType) => (
                 <div
                   key={c._id}
-                  className="max-w-sm cardCategory bg-black/30 hover:scale-105 duration-150 text-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700"
+                  className="max-w-sm cardCategory bg-white hover:scale-105 duration-150 text-gray-800 border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                 >
                   <a href="#">
                     <img
@@ -72,7 +72,7 @@ export default function Category() {
                   </a>
                   <div className="p-5">
                     <a href="#">
-                      <h5 className="mb-2 text-white text-2xl font-bold tracking-tight dark:text-amber-500">
+                      <h5 className="mb-2 text-gray-800 text-2xl font-bold tracking-tight dark:text-amber-500">
                         {c.name.toUpperCase()}
                       </h5>
                     </a>

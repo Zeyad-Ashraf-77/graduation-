@@ -21,6 +21,7 @@ import Cart from './Components/Cart/Cart'
 import Profile from './Components/Profile/Profile'
 import CreateSubCategory from './Components/CreateSubCategory/CreateSubCategory'
 import AddProduct from './Components/AddProduct/AddProduct'
+import Wishlist from './Components/WishList/WishList'
 
 
 function App() {
@@ -65,6 +66,9 @@ function App() {
         },{
           path:"/addProduct",
           element:<AddProduct/>
+        },{
+          path:"wishlist",
+          element:<Wishlist/>
         },
         {
           path:"/layoutAdmin",

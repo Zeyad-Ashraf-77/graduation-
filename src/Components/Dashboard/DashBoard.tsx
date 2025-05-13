@@ -107,20 +107,20 @@ export default function AdminDashboard() {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="rounded-2xl hover:scale-108 transition-all duration-150 shadow-lg shadow-yellow-500 bg-stone-100 dark:bg-gray-800 p-4 text-center">
-          <p className="text-4xl text-[#4e342e] dark:text-amber-500 font-bold">12</p>
-          <p>Products</p>
+          <p className="text-4xl  text-[#4e342e] dark:text-amber-500 font-bold">12</p>
+          <p className='dark:text-white' >Products</p>
         </div>
         <div className="rounded-2xl hover:scale-105 transition-all shadow-lg shadow-yellow-500 bg-stone-100 dark:bg-gray-800 p-4 text-center">
-          <p className="text-4xl text-[#4e342e] dark:text-amber-500 font-bold">{categoryNum}</p>
-          <p>Categories</p>
+          <p className="text-4xl  text-[#4e342e] dark:text-amber-500 font-bold">{categoryNum}</p>
+          <p className='dark:text-white' >Categories</p>
         </div>
         <div className="rounded-2xl hover:scale-105 transition-all shadow-lg shadow-yellow-500 bg-stone-100 dark:bg-gray-800 p-4 text-center">
-          <p className="text-4xl text-[#4e342e] dark:text-amber-500 font-bold">20</p>
-          <p>Orders</p>
+          <p className="text-4xl  text-[#4e342e] dark:text-amber-500 font-bold">20</p>
+          <p className='dark:text-white' >Orders</p>
         </div>
         <div className="rounded-2xl hover:scale-105 transition-all shadow-lg shadow-yellow-500 bg-stone-100 dark:bg-gray-800 p-4 text-center">
-          <p className="text-4xl text-[#4e342e] dark:text-amber-500 font-bold">{userNum}</p>
-          <p>Users</p>
+          <p className="text-4xl  text-[#4e342e] dark:text-amber-500 font-bold">{userNum}</p>
+          <p className='dark:text-white' >Users</p>
         </div>
       </div>
 
@@ -157,7 +157,7 @@ export default function AdminDashboard() {
             {categoryDs.map((category) => (
               <li
                 key={category._id}
-                className="bg-[#efebd9] dark:bg-gray-700 flex items-center justify-between rounded-xl px-3 py-2"
+                className="bg-[#efebd9] dark:text-white dark:bg-gray-700 flex items-center justify-between rounded-xl px-3 py-2"
               >
                 <span>{category.name}</span>
                 <FaTrash className="text-red-600 cursor-pointer text-xl" />
@@ -173,6 +173,96 @@ export default function AdminDashboard() {
             </li>
           </ul>
         </div>
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Recent Orders */}
+      
+        {/* Manage Categories */}
+        <div className="bg-stone-100 dark:bg-gray-800 rounded-2xl p-4">
+          <h2 className="text-lg font-semibold mb-4 dark:text-amber-500">Manage Brands</h2>
+          <ul className="space-y-2">
+            {brandsDs.map((brand) => (
+              <li
+                key={brand._id}
+                className="bg-[#efebd9] dark:bg-gray-700 dark:text-white flex items-center justify-between rounded-xl px-3 py-2"
+              >
+                <span>{brand.name}</span>
+                <FaTrash className="text-red-600 cursor-pointer text-xl" />
+              </li>
+            ))}
+            <li>
+              <button
+                onClick={() => navigate("/layoutAdmin/createBrand")}
+                className="mt-2 bg-yellow-800 dark:bg-amber-700 font-bold text-white w-full border rounded-lg px-3 py-2 text-center"
+              >
+                + Add Brand
+              </button>
+            </li>
+          </ul>
+        </div>
+        <div className="bg-stone-100 dark:bg-gray-800 rounded-2xl p-4">
+          <h2 className="text-lg font-semibold mb-4 dark:text-amber-500">Manage Categories</h2>
+          <ul className="space-y-2">
+            {userDs.map((category) => (
+              <li
+                key={category._id}
+                className="bg-[#efebd9] dark:bg-gray-700 dark:text-white flex items-center justify-between rounded-xl px-3 py-2"
+              >
+                <span>{category.name}</span>
+                <FaTrash className="text-red-600 cursor-pointer text-xl" />
+              </li>
+            ))}
+            <li>
+              <button
+                onClick={() => navigate("/layoutAdmin/createCategory")}
+                className="mt-2 bg-yellow-800 dark:bg-amber-700 font-bold text-white w-full border rounded-lg px-3 py-2 text-center"
+              >
+                + Add Category
+              </button>
+            </li>
+          </ul>
+        </div>
+        
+      </div>
+        <div className="border  dark:border-green-50 rounded-lg p-4 overflow-x-auto">
+        <h2 className="text-lg font-semibold dark:text-white mb-4">Users</h2>
+        <table className="min-w-full text-sm">
+          <thead className="border-b dark:border-green-50 ">
+            <tr>
+              <th className="px-4 dark:text-white  py-2">ID</th>
+              <th className="px-4 dark:text-white  py-2">Name</th>
+              <th className="px-4 dark:text-white  py-2">Email</th>
+              <th className="px-4 dark:text-white  py-2">Role</th>
+              <th className="px-4 dark:text-white  py-2">Status</th>
+              <th className="px-4 dark:text-white  py-2">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {userDs.map((user) => (
+              <tr key={user.id} className="border-b  dark:border-green-50 ">
+                <td className="px-4 dark:text-white  py-2">{user.id}</td>
+                <td className="px-4 dark:text-white  py-2">{user.name}</td>
+                <td className="px-4 dark:text-white  py-2">{user.email}</td>
+                <td className="px-4 dark:text-white  py-2">{user.role}</td>
+                <td className="px-4 dark:text-white  py-2">
+                  <span className={user.isBlocked ? 'text-red-500' : 'text-green-500'}>
+                    {user.isBlocked ? 'Blocked' : 'Active'}
+                  </span>
+                </td>
+                <td className="px-4 py-2">
+                  <button
+                    onClick={() => toggleBlockStatus(user.id)}
+                    className={`px-3 py-1 rounded text-white ${
+                      user.isBlocked ? 'bg-green-600' : 'bg-red-600'
+                    }`}
+                  >
+                    {user.isBlocked ? 'Unblock' : 'Block'}
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

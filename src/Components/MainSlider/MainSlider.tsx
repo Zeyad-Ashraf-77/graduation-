@@ -1,6 +1,17 @@
 import { useEffect, useState } from "react";
 import Slider from "react-slick";
 import axios from "axios";
+import image1 from '../../assets/images/pin/slider1 (1).jpeg'
+import image2 from '../../assets/images/pin/slider2 (2).jpeg'
+import image3 from '../../assets/images/pin/slider3 (3).jpeg'
+import image4 from '../../assets/images/pin/slider4 (4).jpeg'
+import image5 from '../../assets/images/pin/s1.jpeg'
+import image6 from '../../assets/images/pin/s2.jpeg'
+import image7 from '../../assets/images/pin/s3.jpeg'
+import image8 from '../../assets/images/pin/s4.jpeg'
+import image9 from '../../assets/images/pin/s5.jpeg'
+import image10 from '../../assets/images/pin/s6.jpeg'
+import image11 from '../../assets/images/pin/s7.jpeg'
 
 interface Brand {
   _id: string;
@@ -12,6 +23,7 @@ interface Brand {
 export default function MainSlider() {
   const [brands, setBrands] = useState<Brand[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const images = [image1, image2, image3, image4, image5, image6, image7, image8, image9, image10, image11];
 
   useEffect(() => {
     axios
@@ -36,60 +48,68 @@ export default function MainSlider() {
   };
 
   if (isLoading) {
-    return <div className="h-[350px] flex items-center justify-center">Loading...</div>;
+    return (
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center px-6 py-10">
+        {/* Placeholder for Slider */}
+        <div className="relative">
+          <div className="h-[350px] bg-gray-300 animate-pulse rounded-2xl"></div>
+        </div>
+
+        {/* Placeholder for Static Images */}
+        <div className="grid grid-cols-2 gap-4">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <div
+              key={index}
+              className="w-full h-44 bg-gray-300 animate-pulse rounded-lg"
+            ></div>
+          ))}
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center px-6 py-10">
-
-  
-
-      {/* السلايدر */}
-      <div className="relative">
+      {/* Slider */}
+      <div className="">
         <Slider {...settings}>
-          {brands.map((brand) => (
-            <div key={brand._id} className="h-[350px] flex items-center justify-center">
-              <div className="flex w-full h-full bg-gradient-to-r from-yellow-100 via-amber-100 to-yellow-200 rounded-2xl shadow-2xl overflow-hidden">
-                <div className="w-[100%] h-[350px] flex items-center justify-center bg-gradient-to-br from-amber-200 to-yellow-400">
-                  {brand.image?.secure_url ? (
-                    <img
-                      src={brand.image.secure_url}
-                      className=" w-full rounded-2xl h-full border-2 bg-center  border-yellow-900 shadow-xl object-cover  transition-transform duration-500 hover:scale-105"
-                      alt={brand.name}
-                    />
-                  ) : (
-                    <div className="w-80 h-80 flex items-center justify-center bg-gray-200 rounded-full text-7xl border-8 border-yellow-900 shadow-xl">
-                      🏷️
-                    </div>
-                  )}
+          {images.map((i) => (
+            <div key={i} className="h-[350px] flex items-center justify-center">
+              <div className="flex w-full h-full rounded-2xl  ">
+                <div className="w-[100%] h-[350px] flex items-center justify-center ">
+                  <img
+                    src={i}
+                    className="w-full rounded-2xl h-full border-0 bg-cover bg-center border-yellow-900 shadow-xl object-cover transition-transform duration-500 hover:scale-105"
+                    alt={""}
+                  />
                 </div>
-             
               </div>
             </div>
           ))}
         </Slider>
         {/* Decorative Glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] h-[70%] rounded-2xl bg-yellow-200 opacity-30 blur-2xl z-0"></div>
+       
       </div>
-            {/* الصور الثابتة */}
-          <div className="grid grid-cols-2 gap-4">
+
+      {/* Static Images */}
+      <div className="grid grid-cols-2 gap-4">
         <img
-          src="/src/assets/images/static1.jpg"
+          src={image1}
           alt="Static 1"
           className="w-full h-44 object-cover rounded-lg shadow-md"
         />
         <img
-          src="/src/assets/images/static2.jpg"
+          src={image2}
           alt="Static 2"
           className="w-full h-44 object-cover rounded-lg shadow-md"
         />
         <img
-          src="/src/assets/images/static3.jpg"
+          src={image3}
           alt="Static 3"
           className="w-full h-44 object-cover rounded-lg shadow-md"
         />
         <img
-          src="/src/assets/images/static4.jpg"
+          src={image4}
           alt="Static 4"
           className="w-full h-44 object-cover rounded-lg shadow-md"
         />

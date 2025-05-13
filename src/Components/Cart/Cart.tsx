@@ -1,77 +1,399 @@
-import React from "react";
+// import axios from "axios";
+// import { get } from "http";
+// import React, { useEffect, useState } from "react";
+
+// const Cart = () => {
+//   const [cart, setCart] = useState([]);
+//   const [isLoading, setIsLoading] = useState(false);
+
+//   async function getCart() {
+//     try {
+//       setIsLoading(true);
+//       const { data } = await axios.get(`https://project1-kohl-iota.vercel.app/cart`, {
+//         headers: {
+//           Authorization: localStorage.getItem("authorization") || "",
+//           "Content-Type": "application/json",
+//         },
+//       });
+//       console.log(data.cart[0].products);
+//       setCart(data.cart[0].products);
+      
+//     } catch (error) {
+//       console.error("Error fetching cart:", error);
+      
+//     }finally {
+//       setIsLoading(false);
+//     }
+//   }
+
+//   async function updateQuantity(productId: string, quantity: number) {
+//     try {
+//       setIsLoading(true);
+//       const { data } = await axios.patch(
+//         `https://project1-kohl-iota.vercel.app/cart/update`,
+//         {
+//           productId,
+//           quantity,
+//         },
+//         {
+//           headers: {
+//             Authorization: localStorage.getItem("authorization") || "",
+//             "Content-Type": "application/json",
+//           },
+//         }
+//       );
+//       console.log("Updated cart:", data);
+//       // تحديث الكارت بعد التعديل
+//       getCart();
+//     } catch (error) {
+//       console.error("Error updating quantity:", error);
+//     }finally {  
+//       setIsLoading(false);
+//     }
+//   }
+//   async function deleteItem(productId: string) {
+//   try {
+//     setIsLoading(true);
+
+//     const { data } = await axios.delete(
+//       "https://project1-kohl-iota.vercel.app/cart/remove",
+//       {
+//         data: { productId }, // ✨ هنا بتحط البيانات في الـ body
+//         headers: {
+//           Authorization: localStorage.getItem("authorization") || "",
+//           "Content-Type": "application/json",
+//         },
+//       }
+//     );
+
+//     console.log("Deleted item:", data);
+//     getCart(); // لتحديث البيانات بعد الحذف
+//   } catch (error) {
+//     console.error("Error deleting item:", error);
+//   } finally {
+//     setIsLoading(false);
+//   }
+// }
+
+
+ 
+
+//  async function clearCart() {
+//   try {
+//     setIsLoading(true);
+//     const{data}= await axios.delete(`https://project1-kohl-iota.vercel.app/cart/clear`, { 
+//       headers: {
+//         Authorization: localStorage.getItem("authorization") || "",
+//         "Content-Type": "application/json",
+//       },
+//     });
+//     console.log("Cart cleared:", data);
+//     getCart();
+    
+//     } catch (error) {
+//     console.error("Error clearing cart:", error);
+//   }finally {  
+//     setIsLoading(false);
+//   }
+// }
+ 
+
+
+
+
+
+
+
+
+
+//   const total = cart.reduce((sum, item) => sum + item.productId.price * item.quantity, 0);
+
+//   useEffect(() => {
+//     getCart();
+//   }, []);
+//  if (isLoading) {  
+//     return <div className="h-screen bg-amber-50 flex items-center justify-center">
+//       <div className="spinner"></div>
+//     </div>;
+//   }
+//   return (
+//     <div className="max-w-6xl container mx-auto p-6 bg-white shadow-amber-300 rounded-2xl shadow-lg mt-28 mb-20 space-y-6">
+//       <h1 className="font-bold text-center text-gray-800 mb-6 text-2xl">Cart 🛒</h1>
+
+//       {cart.map((item) => (
+//         <div
+//           key={item.productId._id}
+//           className="relative flex flex-col sm:flex-row justify-between items-center bg-gray-200 p-4 rounded-xl shadow-sm gap-4 group"
+//         >
+//           {/* صورة المنتج */}
+//           <div className="flex flex-col sm:flex-row items-center gap-4">
+//             <div className="text-4xl">
+//               <img
+//                 src={item.productId.imageCover.secure_url}
+//                 className=" sm:w-44 h-28 rounded-2xl object-cover"
+//                 alt=""
+//               />
+//             </div>
+//             <div className="text-center sm:text-left">
+//               <h2 className="text-lg font-semibold text-gray-800">{item.productId.name}</h2>
+//               <p className="text-sm text-gray-500">{item.desc}</p>
+//             </div>
+//           </div>
+
+//           {/* التحكم في الكمية */}
+//           <div className="flex flex-col sm:flex-row items-center gap-4">
+//             <div className="flex items-center border rounded-md overflow-hidden">
+//               <button
+//                 onClick={() => updateQuantity(item.productId._id, item.quantity - 1)}
+//                 className="px-3 py-1 text-lg bg-red-700 font-bold text-white duration-150 cursor-pointer"
+//                 disabled={item.quantity <= 1} // منع الكمية من أن تصبح أقل من 1
+//               >
+//                 -
+//               </button>
+//               <span className="px-4">{item.quantity}</span>
+//               <button
+//                 onClick={() => updateQuantity(item.productId._id, item.quantity + 1)}
+//                 className="px-3 py-1 text-lg bg-lime-500 text-white font-bold duration-150 cursor-pointer"
+//               >
+//                 +
+//               </button>
+//             </div>
+//             <div className="text-xl flex items-center gap-2 flex-col font-bold bg-lime-400 text-gray-700 px-4 py-2 rounded-md">
+//               <span className="line-through bg-red-600 text-white">
+//                 Before discount: ${item.productId.price}
+//               </span>
+//               <span>After discount: ${item.finalPrice}</span>
+//             </div>
+//           </div>
+
+//           {/* زر الحذف */}
+//           <div
+//             onClick={() => deleteItem(item.productId._id)}
+//             className="absolute w-20 bg-red-600 bg-opacity-80 text-white flex items-center justify-center text-xl font-bold rounded-xl opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+//           >
+//             Delete
+//           </div>
+//         </div>
+//       ))}
+
+//       <div className="flex flex-col sm:flex-row justify-between items-center border-t pt-4 gap-4">
+//         <h3 className="text-xl font-bold text-gray-800">Total</h3>
+//         <span className="text-xl font-bold text-black">${total}</span>
+//       </div>
+
+//       <button className="w-full mt-4 font-bold bg-yellow-700 text-white py-3 rounded-xl text-lg hover:bg-yellow-500 transition">
+//         Checkout
+//       </button>
+//       <button onClick={clearCart} className="w-full mt-4 font-bold bg-red-700 text-white py-3 rounded-xl text-lg hover:bg-red-500 transition">
+//         Clear Cart
+//       </button>
+//     </div>
+//   );
+// };
+
+// export default Cart;
+
+
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Cart = () => {
-  const cartItems = [
-    {
-      id: 1,
-      name: "Handmade Crafts",
-      desc: "Crafted items made by skilled artisans.",
-      emoji: "🧺",
-      price: 25,
-      quantity: 1,
-    },
-    {
-      id: 2,
-      name: "Ceramic Bowl",
-      desc: "Hand-painted pottery piece",
-      emoji: "🥣",
-      price: 40,
-      quantity: 2,
-    },
-    {
-      id: 3,
-      name: "Macrame Bracelet",
-      desc: "Woven cord bracelet",
-      emoji: "🧵",
-      price: 15,
-      quantity: 1,
-    },
-    {
-      id: 4,
-      name: "Soy Candle",
-      desc: "Eco-friendly wax candle",
-      emoji: "🕯️",
-      price: 30,
-      quantity: 3,
-    },
-  ];
+  const [cart, setCart] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [productLength, setProductLength] = useState(0);
 
-  const total = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  async function getCart() {
+    try {
+      setIsLoading(true);
+      const { data } = await axios.get(`https://project1-kohl-iota.vercel.app/cart`, {
+        headers: {
+          Authorization: localStorage.getItem("authorization") || "",
+          "Content-Type": "application/json",
+        },
+      });
+      setCart(data.cart[0].products);
+      setProductLength(data.cart[0].products.length);
+      console.log(data.cart[0].products);
+    } catch (error) {
+      toast.error("Error fetching cart!");
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function updateQuantity(productId: string, quantity: number) {
+    try {
+      setIsLoading(true);
+      const { data } = await axios.patch(
+        `https://project1-kohl-iota.vercel.app/cart/update`,
+        {
+          productId,
+          quantity,
+        },
+        {
+          headers: {
+            Authorization: localStorage.getItem("authorization") || "",
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      getCart();
+      toast.success("Quantity updated successfully!");
+    } catch (error) {
+      toast.error("Error updating quantity!");
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function deleteItem(productId: string) {
+    try {
+      setIsLoading(true);
+      const { data } = await axios.delete(
+        "https://project1-kohl-iota.vercel.app/cart/remove",
+        {
+          data: { productId },
+          headers: {
+            Authorization: localStorage.getItem("authorization") || "",
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      getCart();
+      toast.success("Item deleted successfully!");
+    } catch (error) {
+      toast.error("Error deleting item!");
+      console.log(error);
+      
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function clearCart() {
+    try {
+      setIsLoading(true);
+      const { data } = await axios.delete(`https://project1-kohl-iota.vercel.app/cart/clear`, {
+        headers: {
+          Authorization: localStorage.getItem("authorization") || "",
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("Cart cleared:", data);
+      getCart();
+      toast.success("Cart cleared successfully!");
+    } catch (error) {
+      toast.error("Error clearing cart!");
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  const total = cart.reduce((sum, item) => sum + item.productId.price * item.quantity, 0);
+
+  useEffect(() => {
+    getCart();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="h-screen bg-amber-50 flex items-center justify-center">
+        <div className="spinner"></div>
+      </div>
+    );
+  }
 
   return (
-    <div className=" max-w-6xl container mx-auto p-6 bg-white shadow-amber-300  rounded-2xl shadow-lg mt-28 mb-20 space-y-6">
-      <h1 className=" font-bold text-center text-gray-800 mb-6"> Cart 🛒</h1>
+    <>
+      {productLength === 0 ? (
+        <div className="h-screen bg-amber-50 flex items-center justify-center">
+          <div className="text-center">
+            
+            <h2 className="text-2xl font-bold mb-4">Your cart is empty</h2>
+          </div>
+        </div>
+      ) : (
+        <div className="max-w-6xl container mx-auto p-6 bg-white shadow-amber-300 rounded-2xl shadow-lg mt-28 mb-20 space-y-6">
+  
+      <h1 className="font-bold text-center text-gray-800 mb-6">Cart 🛒</h1>
 
-      {cartItems.map((item) => (
-        <div key={item.id} className="flex justify-between items-center bg-gray-200 p-4 rounded-xl shadow-sm">
-          <div className="flex items-center gap-4">
-            <div className="text-4xl">{item.emoji}</div>
-            <div>
-              <h2 className="text-lg font-semibold text-gray-800">{item.name}</h2>
+      {cart.map((item) => (
+        <div
+          key={item.productId._id}
+          className="relative flex flex-col sm:flex-row justify-between items-center bg-gray-200 p-4 rounded-xl shadow-sm gap-4 group"
+        >
+          {/* صورة المنتج */}
+          <div className="flex flex-col sm:flex-row items-center gap-4">
+            <div className="text-4xl">
+              <img
+                src={item.productId.imageCover.secure_url}
+                className="sm:w-44 h-28 rounded-2xl object-cover"
+                alt=""
+              />
+            </div>
+            <div className="text-center sm:text-left">
+              <h2 className="text-lg font-semibold text-gray-800">{item.productId.name}</h2>
               <p className="text-sm text-gray-500">{item.desc}</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
+          {/* التحكم في الكمية */}
+          <div className="flex flex-col sm:flex-row items-center gap-4">
             <div className="flex items-center border rounded-md overflow-hidden">
-              <button className="px-3 py-1 text-lg bg-red-700 font-bold text-white  duration-150 cursor-pointer ">-</button>
+              <button
+                onClick={() => updateQuantity(item.productId._id, item.quantity - 1)}
+                className="px-3 py-1 text-lg bg-red-700 font-bold text-white duration-150 cursor-pointer"
+                disabled={item.quantity <= 1}
+              >
+                -
+              </button>
               <span className="px-4">{item.quantity}</span>
-              <button className="px-3 py-1 text-lg bg-lime-500  text-white font-bold duration-150 cursor-pointer">+</button>
+              <button
+                onClick={() => updateQuantity(item.productId._id, item.quantity + 1)}
+                className="px-3 py-1 text-lg bg-lime-500 text-white font-bold duration-150 cursor-pointer"
+              >
+                +
+              </button>
             </div>
-            <div className="text-xl font-bold bg-lime-400 text-gray-700">${item.price}</div>
+            <div className="text-xl flex items-center gap-2 flex-col font-bold bg-lime-400 text-gray-700 px-4 py-2 rounded-md">
+              <span className="line-through bg-red-600 text-white">
+                Before discount: ${item.productId.price}
+              </span>
+              <span>After discount: ${item.finalPrice}</span>
+            </div>
+          </div>
+
+          {/* زر الحذف */}
+          <div
+            onClick={() => deleteItem(item.productId._id)}
+            className="absolute w-20 bg-red-600 bg-opacity-80 text-white flex items-center justify-center text-xl font-bold rounded-xl opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+          >
+            Delete
           </div>
         </div>
       ))}
 
-      <div className="flex justify-between items-center border-t pt-4">
+      <div className="flex flex-col sm:flex-row justify-between items-center border-t pt-4 gap-4">
         <h3 className="text-xl font-bold text-gray-800">Total</h3>
         <span className="text-xl font-bold text-black">${total}</span>
       </div>
 
-      <button className="w-full mt-4 font-bold bg-yellow-700 text-white py-3 rounded-xl text-lg  hover:bg-yellow-500 transition">
+      <button className="w-full mt-4 font-bold bg-yellow-700 text-white py-3 rounded-xl text-lg hover:bg-yellow-500 transition">
         Checkout
       </button>
+      <button
+        onClick={clearCart}
+        className="w-full mt-4 font-bold bg-red-700 text-white py-3 rounded-xl text-lg hover:bg-red-500 transition"
+      >
+        Clear Cart
+      </button>
     </div>
+      )}
+    </>
+   
   );
 };
 

@@ -3,10 +3,13 @@ import { useEffect, useState } from "react";
 import { FaStar } from "react-icons/fa";
 import { IoIosAddCircle } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function ProductListPage() {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true); // حالة اللودينج
+  const [isLoading1, setIsLoading1] = useState(false); // حالة اللودينج للزر
   const navigate = useNavigate();
 
   function getProducts() {
@@ -18,10 +21,37 @@ export default function ProductListPage() {
       })
       .catch((err) => {
         console.log(err);
+        toast.error("Error fetching products!");
       })
       .finally(() => {
         setIsLoading(false); // إيقاف اللودينج بعد جلب البيانات
       });
+  }
+
+  async function addToCart(productId: string) {
+    try {
+      setIsLoading1(true);
+      const { data } = await axios.post(
+        `https://project1-kohl-iota.vercel.app/cart/create`,
+        {
+          productId: productId,
+          quantity: 1,
+        },
+        {
+          headers: {
+            Authorization: localStorage.getItem("authorization") || "",
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(data);
+      toast.success("Product added to cart successfully!");
+    } catch (error) {
+      console.log("Error adding to cart:", error);
+      toast.error("Error adding product to cart!");
+    } finally {
+      setIsLoading1(false);
+    }
   }
 
   useEffect(() => {
@@ -30,6 +60,7 @@ export default function ProductListPage() {
 
   return (
     <div className="bg-[#f9f9f6] dark:bg-gray-900 text-gray-800 dark:text-gray-200 mt-16 font-sans min-h-screen">
+      <ToastContainer />
       {/* Products Grid */}
       <section className="py-12 px-4 md:px-12 lg:px-20 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
         <h2 className="text-3xl font-bold text-center mb-10 dark:text-amber-500">
@@ -37,16 +68,18 @@ export default function ProductListPage() {
         </h2>
 
         {/* Placeholder for adding a new product */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-6">
-          <div
-            onClick={() => navigate("/addProduct")}
-            className="bg-gray-200 dark:bg-gray-700 rounded shadow hover:shadow-2xl duration-500 hover:shadow-yellow-500 p-4 cursor-pointer flex items-center justify-center text-center text-brown-600 dark:text-amber-500 font-bold"
-          >
-            <p className="text-lg flex items-center justify-center">
-              Add New Product <IoIosAddCircle className="ml-1 text-2xl" />
-            </p>
+        {localStorage.getItem("role") === "crafter" && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-6">
+            <div
+              onClick={() => navigate("/addProduct")}
+              className="bg-gray-200 dark:bg-gray-700 rounded shadow hover:shadow-2xl duration-500 hover:shadow-yellow-500 p-4 cursor-pointer flex items-center justify-center text-center text-brown-600 dark:text-amber-500 font-bold"
+            >
+              <p className="text-lg flex items-center justify-center">
+                Add New Product <IoIosAddCircle className="ml-1 text-2xl" />
+              </p>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Products Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -88,10 +121,11 @@ export default function ProductListPage() {
                     </p>
                   </div>
                   <button
+                    onClick={() => addToCart(product._id)}
                     type="button"
                     className="py-2.5 w-full px-5 me-2 mb-2 text-sm font-bold focus:outline-none bg-[#a9690a] text-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-amber-700 dark:text-gray-200 dark:border-gray-600 dark:hover:text-white dark:hover:bg-amber-600"
                   >
-                    Add To Cart
+                    {isLoading1 ? "Loading..." : "Add To Cart"}
                   </button>
                 </div>
               ))}

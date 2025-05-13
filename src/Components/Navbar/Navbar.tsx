@@ -46,7 +46,7 @@ export default function Navbar() {
           <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
             <a
               href="#"
-              className="flex items-center space-x-3 rtl:space-x-reverse"
+              className="flex  items-center space-x-3 rtl:space-x-reverse"
             >
               <img
                 src={logo}
@@ -81,7 +81,7 @@ export default function Navbar() {
                     <li>
                       <NavLink
                         to="/"
-                        className="block py-2 px-3 text-white bg-amber-700 rounded-sm md:bg-transparent md:text-amber-700 md:p-0 md:dark:text-amber-500 dark:bg-amber-600 md:dark:bg-transparent"
+                        className="block py-2 px-3 text-gray-900 font-medium  bg-amber-700 rounded-sm md:bg-transparent md:text-amber-700 md:p-0 md:dark:text-amber-500 dark:bg-amber-600 md:dark:bg-transparent"
                         aria-current="page"
                       >
                         Home
@@ -90,7 +90,7 @@ export default function Navbar() {
                     <li>
                       <NavLink
                         to="/category"
-                        className="block py-0 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-700 md:p-0 dark:text-white md:dark:hover:text-amber-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                        className="block py-0 px-3 text-gray-900 font-medium rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-700 md:p-0 dark:text-white md:dark:hover:text-amber-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
                       >
                         Category
                       </NavLink>
@@ -98,7 +98,7 @@ export default function Navbar() {
                     <li>
                       <NavLink
                         to="/product"
-                        className="block py-0 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-700 md:p-0 dark:text-white md:dark:hover:text-amber-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                        className="block py-0 px-3 text-gray-900 font-medium rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-700 md:p-0 dark:text-white md:dark:hover:text-amber-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
                       >
                         Products
                       </NavLink>
@@ -106,7 +106,7 @@ export default function Navbar() {
                     <li>
                       <NavLink
                         to="/brand"
-                        className="block py-0 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-700 md:p-0 dark:text-white md:dark:hover:text-amber-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                        className="block py-0 px-3 text-gray-900 font-medium rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-700 md:p-0 dark:text-white md:dark:hover:text-amber-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
                       >
                         Brands
                       </NavLink>
@@ -114,9 +114,17 @@ export default function Navbar() {
                     <li>
                       <NavLink
                         to="/cart"
-                        className="block py-0 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-700 md:p-0 dark:text-white md:dark:hover:text-amber-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                        className="block py-0 px-3 text-gray-900 font-medium rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-700 md:p-0 dark:text-white md:dark:hover:text-amber-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
                       >
                         Cart
+                      </NavLink>
+                    </li>
+                    <li>
+                      <NavLink
+                        to="/wishList"
+                        className="block py-0 px-3 text-gray-900 font-medium rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-700 md:p-0 dark:text-white md:dark:hover:text-amber-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                      >
+                        wishlist
                       </NavLink>
                     </li>
                     {/* Dropdown for Profile, Admin, Logout */}
@@ -125,7 +133,7 @@ export default function Navbar() {
                         onClick={() =>
                           setIsProfileDropdownOpen(!isProfileDropdownOpen)
                         }
-                        className="flex items-center gap-2 py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-700 md:p-0 dark:text-white md:dark:hover:text-amber-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                        className="flex items-center gap-2 py-2 px-3 text-gray-900 font-medium rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-700 md:p-0 dark:text-white md:dark:hover:text-amber-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
                       >
                         <FaUserCircle className="text-2xl" />
                         
