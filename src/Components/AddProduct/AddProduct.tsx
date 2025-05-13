@@ -1,13 +1,65 @@
-import React from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
 
+interface Category {
+  _id: string;
+  name: string;
+}
+
+interface Brand {
+  _id: string;
+  name: string;
+}
+
+interface SubCategory {
+  _id: string;
+  name: string;
+}
+
 export default function AddProduct() {
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [brands, setBrands] = useState<Brand[]>([]);
+  const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  async function getCategory() {
+    try {
+      const { data } = await axios.get(`https://project1-kohl-iota.vercel.app/category`, {
+        headers: { Authorization: localStorage.getItem("authorization") },
+      });
+      setCategories(data.categories);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function getBrand() {
+    try {
+      const { data } = await axios.get(`https://project1-kohl-iota.vercel.app/brand`, {
+        headers: { Authorization: localStorage.getItem("authorization") },
+      });
+      setBrands(data.brands);
+    } catch (error) {
+      console.error("Error fetching brands:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    getCategory();
+    getBrand();
+  }, []);
+
   const formik = useFormik({
     initialValues: {
       name: '',
-      description: '',
+      describtion: '',
       stock: '',
       quantity: '',
       category: '',
@@ -17,44 +69,35 @@ export default function AddProduct() {
       avgRating: '',
       brand: '',
       subCategory: '',
-      imageCover: null,
-      images: [],
+      imageCover: null as File | null,
+      images: [] as File[],
     },
-    // validationSchema: Yup.object({
-    //   name: Yup.string().required('Required'),
-    //   description: Yup.string().required('Required'),
-    //   stock: Yup.number().required('Required'),
-    //   quantity: Yup.number().required('Required'),
-    //   category: Yup.string().required('Required'),
-    //   price: Yup.number().required('Required'),
-    //   discount: Yup.number().required('Required'),
-    //   rate: Yup.number().required('Required'),
-    //   avgRating: Yup.number().required('Required'),
-    //   brand: Yup.string().required('Required'),
-    //   subCategory: Yup.string().required('Required'),
-    // }),
+    validationSchema: Yup.object({
+      name: Yup.string().required('Required'),
+      describtion: Yup.string().required('Required'),
+      stock: Yup.number().required('Required'),
+      quantity: Yup.number().required('Required'),
+      category: Yup.string().required('Required'),
+      price: Yup.number().required('Required'),
+      discount: Yup.number().required('Required'),
+      rate: Yup.number().required('Required'),
+      avgRating: Yup.number().required('Required'),
+      brand: Yup.string().required('Required'),
+      subCategory: Yup.string().required('Required'),
+    }),
     onSubmit: async (values) => {
       try {
+        console.log('Formik Values:', values);
         const formData = new FormData();
-        formData.append('name', values.name);
-        formData.append('description', values.description);
-        formData.append('stock', values.stock);
-        formData.append('quantity', values.quantity);
-        formData.append('category', values.category);
-        formData.append('price', values.price);
-        formData.append('discount', values.discount);
-        formData.append('rate', values.rate);
-        formData.append('avgRating', values.avgRating);
-        formData.append('brand', values.brand);
-        formData.append('subCategory', values.subCategory);
-        if (values.imageCover) {
-          formData.append('imageCover', values.imageCover);
-        }
-        if (values.images && values.images.length > 0) {
-          Array.from(values.images).forEach((image) => {
-            formData.append('images', image);
-          });
-        }
+        Object.entries(values).forEach(([key, value]) => {
+          if (key === 'images' && Array.isArray(value)) {
+            value.forEach((img) => formData.append('images', img));
+          } else if (key === 'imageCover' && value) {
+            formData.append('imageCover', value);
+          } else {
+            formData.append(key, String(value));
+          }
+        });
 
         const token = localStorage.getItem('authorization');
         const response = await axios.post(
@@ -67,8 +110,9 @@ export default function AddProduct() {
             },
           }
         );
-        console.log('Product created successfully:', response.data);
+
         alert('Product created successfully!');
+        console.log(response.data);
       } catch (error) {
         console.error('Error creating product:', error);
         alert('Failed to create product. Please try again.');
@@ -76,84 +120,178 @@ export default function AddProduct() {
     },
   });
 
+  useEffect(() => {
+    const fetchSubCategories = () => {
+      if (formik.values.category) {
+        axios
+          .get(`https://project1-kohl-iota.vercel.app/sub-category/${formik.values.category}`, {
+            headers: {
+              Authorization: localStorage.getItem("authorization") || "",
+            },
+          })
+          .then((res) => {
+            setSubCategories(res.data.subCategories || []);
+          })
+          .catch((error) => {
+            console.error("Error fetching subcategories:", error);
+            setSubCategories([]);
+          });
+      } else {
+        setSubCategories([]);
+      }
+    };
+
+    fetchSubCategories();
+  }, [formik.values.category]);
+
   return (
-    <>
-      <form
-        onSubmit={formik.handleSubmit}
-        className="max-w-xl mt-32 mx-auto p-6 bg-[#f9f9f6] rounded-2xl shadow-lg space-y-5 border border-gray-300"
-      >
-        <h2 className=" font-bold mb-4 text-center text-[#a9690a]">Create New Product</h2>
+    <form
+      onSubmit={formik.handleSubmit}
+      className="max-w-xl mt-32 mx-auto p-6 bg-[#f9f9f6] rounded-2xl shadow-lg space-y-5 border border-gray-300"
+    >
+      <h2 className="font-bold mb-4 text-center text-[#a9690a]">Create New Product</h2>
 
-        {/* Text Inputs */}
-        {[
-          ['name', 'Product Name'],
-          ['description', 'Description'],
-          ['stock', 'Stock'],
-          ['quantity', 'Quantity'],
-          ['category', 'Category ID'],
-          ['price', 'Price'],
-          ['discount', 'Discount'],
-          ['rate', 'Rate'],
-          ['avgRating', 'Average Rating'],
-          ['brand', 'Brand ID'],
-          ['subCategory', 'Subcategory ID'],
-        ].map(([key, label]) => (
-          <div key={key}>
-            <label htmlFor={key} className="block font-medium text-[#6b4f4f] mb-1">
-              {label}
-            </label>
-            <input
-              id={key}
-              name={key}
-              type="text"
-              placeholder={label}
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#a9690a] bg-[#f0ece4] text-gray-800"
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              value={formik.values[key]}
-            />
-            {formik.touched[key] && formik.errors[key] ? (
-              <div className="text-red-500 text-sm">{formik.errors[key]}</div>
-            ) : null}
-          </div>
-        ))}
-
-        {/* Image Cover */}
-        <div>
-          <label className="block font-medium text-[#6b4f4f] mb-1">Image Cover</label>
+      {([
+        ['name', 'Product Name'],
+        ['describtion', 'Describtion'],
+        ['stock', 'Stock'],
+        ['quantity', 'Quantity'],
+        ['price', 'Price'],
+        ['discount', 'Discount'],
+        ['rate', 'Rate'],
+        ['avgRating', 'Average Rating'],
+      ] as const).map(([key, label]) => (
+        <div key={key}>
+          <label htmlFor={key} className="block font-medium text-[#6b4f4f] mb-1">
+            {label}
+          </label>
           <input
-            type="file"
-            name="imageCover"
-            accept="image/*"
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-[#f0ece4] text-gray-800"
-            onChange={(event) => {
-              formik.setFieldValue('imageCover', event.currentTarget.files[0]);
-            }}
+            id={key}
+            name={key}
+            type="text"
+            placeholder={label}
+            className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-[#f0ece4] text-gray-800"
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            value={formik.values[key]}
           />
+          {formik.touched[key] && formik.errors[key] && (
+            <div className="text-red-500 text-sm">{formik.errors[key]}</div>
+          )}
         </div>
+      ))}
 
-        {/* Images */}
-        <div>
-          <label className="block font-medium text-[#6b4f4f] mb-1">Images (Multiple)</label>
-          <input
-            type="file"
-            name="images"
-            accept="image/*"
-            multiple
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-[#f0ece4] text-gray-800"
-            onChange={(event) => {
-              formik.setFieldValue('images', event.currentTarget.files);
-            }}
-          />
-        </div>
-
-        <button
-          type="submit"
-          className="w-full bg-[#a9690a] text-white py-2 rounded-lg hover:bg-yellow-500 hover:text-black transition"
+      <div>
+        <label htmlFor="category" className="block font-medium text-[#6b4f4f] mb-1">
+          Category
+        </label>
+        <select
+          name="category"
+          id="category"
+          className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-[#f0ece4] text-gray-800"
+          value={formik.values.category}
+          onChange={(e) => {
+            formik.setFieldValue('category', e.target.value);
+            formik.setFieldValue('subCategory', '');
+          }}
+          onBlur={formik.handleBlur}
         >
-          Submit
-        </button>
-      </form>
-    </>
+          <option value="">Select Category</option>
+          {categories.map((cat) => (
+            <option key={cat._id} value={cat.name}>
+              {cat.name}
+            </option>
+          ))}
+        </select>
+        {formik.touched.category && formik.errors.category && (
+          <div className="text-red-500 text-sm">{formik.errors.category}</div>
+        )}
+      </div>
+
+      <div>
+        <label htmlFor="subCategory" className="block font-medium text-[#6b4f4f] mb-1">
+          SubCategory
+        </label>
+        <select
+          name="subCategory"
+          id="subCategory"
+          className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-[#f0ece4] text-gray-800"
+          value={formik.values.subCategory}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          disabled={!subCategories.length}
+        >
+          <option value="">Select Subcategory</option>
+          {subCategories.map((sub) => (
+            <option key={sub._id} value={sub.name}>
+              {sub.name}
+            </option>
+          ))}
+        </select>
+        {formik.touched.subCategory && formik.errors.subCategory && (
+          <div className="text-red-500 text-sm">{formik.errors.subCategory}</div>
+        )}
+      </div>
+
+      <div>
+        <label htmlFor="brand" className="block font-medium text-[#6b4f4f] mb-1">
+          Brand
+        </label>
+        <select
+          name="brand"
+          id="brand"
+          className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-[#f0ece4] text-gray-800"
+          value={formik.values.brand}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+        >
+          <option value="">Select Brand</option>
+          {brands.map((brand) => (
+            <option key={brand._id} value={brand.name}>
+              {brand.name}
+            </option>
+          ))}
+        </select>
+        {formik.touched.brand && formik.errors.brand && (
+          <div className="text-red-500 text-sm">{formik.errors.brand}</div>
+        )}
+      </div>
+
+      <div>
+        <label className="block font-medium text-[#6b4f4f] mb-1">Image Cover</label>
+        <input
+          type="file"
+          name="imageCover"
+          accept="image/*"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-[#f0ece4] text-gray-800"
+          onChange={(event) => {
+            const file = event.currentTarget.files?.[0] || null;
+            formik.setFieldValue('imageCover', file);
+          }}
+        />
+      </div>
+
+      <div>
+        <label className="block font-medium text-[#6b4f4f] mb-1">Images (Multiple)</label>
+        <input
+          type="file"
+          name="images"
+          accept="image/*"
+          multiple
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-[#f0ece4] text-gray-800"
+          onChange={(event) => {
+            const files = event.currentTarget.files;
+            formik.setFieldValue('images', files ? Array.from(files) : []);
+          }}
+        />
+      </div>
+
+      <button
+        type="submit"
+        className="w-full bg-[#a9690a] text-white py-2 rounded-lg hover:bg-yellow-500 hover:text-black transition"
+      >
+        Submit
+      </button>
+    </form>
   );
 }
