@@ -117,6 +117,17 @@ const Cart = () => {
     getCart();
   }, []);
 
+  // تأكد من تحويل القيم الرقمية بشكل صحيح
+  const totalInt = Number(total);
+  useEffect(() => {
+    if (isNaN(totalInt)) {
+      toast.error("Total is not a valid number!");
+    }
+  }, [totalInt]);
+  if (isNaN(totalInt)) {
+    return null;
+  }
+
   if (isLoading) {
     return (
       <div className="h-screen bg-amber-50 flex items-center justify-center">
@@ -139,74 +150,84 @@ const Cart = () => {
         <div className="max-w-6xl container mx-auto p-6 bg-white shadow-amber-300 rounded-2xl shadow-lg mt-28 mb-20 space-y-6">
           <h1 className="font-bold text-center text-gray-800 mb-6">Cart 🛒</h1>
 
-          {cart.map((item) => (
-            <div
-              key={item.productId._id}
-              className="relative flex flex-col sm:flex-row justify-between items-center bg-gray-200 p-4 rounded-xl shadow-sm gap-4 group"
-            >
-              {/* صورة المنتج */}
-              <div className="flex flex-col sm:flex-row items-center gap-4">
-                <div className="text-4xl">
-                  <img
-                    src={item.productId.imageCover.secure_url}
-                    className="sm:w-44 h-28 rounded-2xl object-cover"
-                    alt=""
-                  />
-                </div>
-                <div className="text-center sm:text-left">
-                  <h2 className="text-lg font-semibold text-gray-800">
-                    {item.productId.name}
-                  </h2>
-                  <p className="text-sm text-gray-500">{item.desc}</p>
-                </div>
-              </div>
-
-              {/* التحكم في الكمية */}
-              <div className="flex flex-col sm:flex-row items-center gap-4">
-                <div className="flex items-center border rounded-md overflow-hidden">
-                  <button
-                    onClick={() =>
-                      updateQuantity(item.productId._id, item.quantity - 1)
-                    }
-                    className="px-3 py-1 text-lg bg-red-700 font-bold text-white duration-150 cursor-pointer"
-                    disabled={item.quantity <= 1}
-                  >
-                    -
-                  </button>
-                  <span className="px-4">{item.quantity}</span>
-                  <button
-                    onClick={() =>
-                      updateQuantity(item.productId._id, item.quantity + 1)
-                    }
-                    className="px-3 py-1 text-lg bg-lime-500 text-white font-bold duration-150 cursor-pointer"
-                  >
-                    +
-                  </button>
-                </div>
-                <div className="text-xl flex items-center gap-2 flex-col font-bold bg-lime-400 text-gray-700 px-4 py-2 rounded-md">
-                  <span className="line-through bg-red-600 text-white">
-                    Before discount: ${item.productId.price}
-                  </span>
-                  <span>After discount: ${item.finalPrice}</span>
-                </div>
-              </div>
-
-              {/* زر الحذف */}
+          {cart.map((item) =>
+            item.productId ? (
               <div
-                onClick={() => deleteItem(item.productId._id)}
-                className="absolute w-20 bg-red-600 bg-opacity-80 text-white flex items-center justify-center text-xl font-bold rounded-xl opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                key={item.productId._id}
+                className="relative flex flex-col sm:flex-row justify-between items-center bg-gray-200 p-4 rounded-xl shadow-sm gap-4 group"
               >
-                Delete
+                {/* صورة المنتج */}
+                <div className="flex flex-col sm:flex-row items-center gap-4">
+                  <div className="text-4xl">
+                    <img
+                      src={
+                        item.productId?.imageCover?.secure_url ||
+                        "../assets/images/download.png"
+                      }
+                      className="sm:w-44 h-28 rounded-2xl object-cover"
+                      alt=""
+                    />
+                  </div>
+                  <div className="text-center sm:text-left">
+                    <h2 className="text-lg font-semibold text-gray-800">
+                      {item.productId.name}
+                    </h2>
+                    <p className="text-sm text-gray-500">{item.desc}</p>
+                  </div>
+                </div>
+
+                {/* التحكم في الكمية */}
+                <div className="flex flex-col sm:flex-row items-center gap-4">
+                  <div className="flex items-center border rounded-md overflow-hidden">
+                    <button
+                      onClick={() =>
+                        updateQuantity(item.productId._id, item.quantity - 1)
+                      }
+                      className="px-3 py-1 text-lg bg-red-700 font-bold text-white duration-150 cursor-pointer"
+                      disabled={item.quantity <= 1}
+                    >
+                      -
+                    </button>
+                    <span className="px-4">{item.quantity}</span>
+                    <button
+                      onClick={() =>
+                        updateQuantity(item.productId._id, item.quantity + 1)
+                      }
+                      className="px-3 py-1 text-lg bg-lime-500 text-white font-bold duration-150 cursor-pointer"
+                    >
+                      +
+                    </button>
+                  </div>
+                  <div className="text-xl flex items-center gap-2 flex-col font-bold bg-lime-400 text-gray-700 px-4 py-2 rounded-md">
+                    <span className="line-through bg-red-600 text-white">
+                      Before discount: ${item.productId.price}
+                    </span>
+                    <span>After discount: ${item.finalPrice}</span>
+                  </div>
+                </div>
+
+                {/* زر الحذف */}
+                <div
+                  onClick={() => deleteItem(item.productId._id)}
+                  className="absolute w-20 bg-red-600 bg-opacity-80 text-white flex items-center justify-center text-xl font-bold rounded-xl opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                >
+                  Delete
+                </div>
               </div>
-            </div>
-          ))}
+            ) : null
+          )}
 
           <div className="flex flex-col sm:flex-row justify-between items-center border-t pt-4 gap-4">
             <h3 className="text-xl font-bold text-gray-800">Total</h3>
-            <span className="text-xl font-bold text-black">${total}</span>
+            <span className="text-xl font-bold text-black">
+              ${Math.round(total)}
+            </span>
           </div>
 
-          <button onClick={() => navigate("/orderForm")} className="w-full mt-4 font-bold bg-yellow-700 text-white py-3 rounded-xl text-lg hover:bg-yellow-500 transition">
+          <button
+            onClick={() => navigate("/orderForm")}
+            className="w-full mt-4 font-bold bg-yellow-700 text-white py-3 rounded-xl text-lg hover:bg-yellow-500 transition"
+          >
             Checkout
           </button>
           <button

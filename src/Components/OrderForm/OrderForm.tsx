@@ -1,100 +1,3 @@
-// import React, { useState } from "react";
-// import axios from "axios";
-
-// const OrderForm: React.FC = () => {
-//   const [phone, setPhone] = useState("");
-//   const [address, setAddress] = useState("");
-//   const [paymentMethod, setPaymentMethod] = useState("card");
-//   const [isSubmitting, setIsSubmitting] = useState(false);
-//   const [message, setMessage] = useState("");
-
-//   const handleSubmit = async (e: React.FormEvent) => {
-//     e.preventDefault();
-//     setIsSubmitting(true);
-//     setMessage("");
-
-//     try {
-//       const { data } = await axios.post(
-//         "https://project1-kohl-iota.vercel.app/order/create",
-//         {
-//           phone,
-//           address,
-//           paymentMethod,
-//         },
-//         {
-//           headers: {
-//             Authorization: localStorage.getItem("authorization") || "",
-//             "Content-Type": "application/json",
-//           },
-//         }
-//       );
-
-//       setMessage("Order placed successfully!");
-//       console.log(data);
-//     } catch (error: any) {
-//       console.error("Order creation failed:", error);
-//       setMessage("Failed to place order.");
-//     } finally {
-//       setIsSubmitting(false);
-//     }
-//   };
-
-//   return (
-//     <div className="max-w-md  mx-auto mt-20 p-6 bg-white rounded-lg shadow-md">
-//       <h2 className="text-xl font-semibold mb-4">Create New Order</h2>
-//       <form onSubmit={handleSubmit} className="space-y-4">
-//         <div>
-//           <label className="block text-sm font-medium">Phone</label>
-//           <input
-//             type="text"
-//             className="w-full mt-1 p-2 border rounded-md"
-//             value={phone}
-//             onChange={(e) => setPhone(e.target.value)}
-//             required
-//           />
-//         </div>
-
-//         <div>
-//           <label className="block text-sm font-medium">Address</label>
-//           <input
-//             type="text"
-//             className="w-full mt-1 p-2 border rounded-md"
-//             value={address}
-//             onChange={(e) => setAddress(e.target.value)}
-//             required
-//           />
-//         </div>
-
-//         <div>
-//           <label className="block text-sm font-medium">Payment Method</label>
-//           <select
-//             className="w-full mt-1 p-2 border rounded-md"
-//             value={paymentMethod}
-//             onChange={(e) => setPaymentMethod(e.target.value)}
-//           >
-//             <option value="card">Card</option>
-//             <option value="cash">Cash</option>
-//           </select>
-//         </div>
-
-//         <button
-//           type="submit"
-//           disabled={isSubmitting}
-//           className="w-full bg-[#6B4E35] text-white py-2 rounded-md hover:bg-[#543e2a] transition"
-//         >
-//           {isSubmitting ? "Submitting..." : "Place Order"}
-//         </button>
-
-//         {message && (
-//           <p className="text-sm text-center mt-2 text-gray-700">{message}</p>
-//         )}
-//       </form>
-//     </div>
-//   );
-// };
-
-// export default OrderForm;
-
 import React, { useState } from "react";
 import axios from "axios";
 
@@ -140,6 +43,12 @@ const OrderAndPaymentForm: React.FC = () => {
     e.preventDefault();
     setIsSubmitting(true);
     setMessage("");
+
+    if (!orderId) {
+      setMessage("Order ID is missing. Please create an order first.");
+      setIsSubmitting(false);
+      return;
+    }
 
     try {
       const { data } = await axios.post(
@@ -193,7 +102,9 @@ const OrderAndPaymentForm: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium">Payment Method</label>
+              <label className="block text-sm font-medium">
+                Payment Method
+              </label>
               <select
                 className="w-full mt-1 p-2 border rounded-md"
                 value={paymentMethod}
@@ -220,11 +131,12 @@ const OrderAndPaymentForm: React.FC = () => {
             <input type="hidden" value={orderId} />
 
             <div>
-              <label className="block text-sm font-medium">Code (Optional)</label>
+              <label className="block text-sm font-medium">
+                Code (Optional)
+              </label>
               <input
                 type="text"
                 className="w-full mt-1 p-2 border rounded-md"
-              
                 onChange={(e) => setCode(e.target.value)}
                 placeholder="Enter code if you have one"
               />
