@@ -2,8 +2,10 @@
 @import 'flowbite';
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Import Playwrite Danmark Loopet font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Playwrite+Danmark+Loopet&display=swap');
 
- 
+
 html {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
@@ -52,6 +54,10 @@ html {
   text-decoration: none;
   box-shadow: 2px 5px 5px rgb(241, 193, 49);
 }
+body {
+  font-family: 'Playwrite Danmark Loopet', cursive;
+}
+
 body:not(.dark) {
   background-color: #f3f4f6;
   color: #000;
@@ -146,4 +152,19 @@ body.dark {
    100% {
       transform: rotate(1turn);
    }
+}
+h1{
+  position: relative;
+}
+
+h1::after{
+  content: '';
+  position: absolute;
+  bottom: -10px;  
+  left: 10%;
+  right: 10%;
+  background: #d6982f;
+  width: 30%;
+  height: 2px;
+  margin: auto;
 }

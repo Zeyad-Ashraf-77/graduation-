@@ -1,16 +1,11 @@
-
-
 import './App.css'
 import Home from './Components/Home/Home'
-
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Layout from './Components/Layout/Layout'
 import Login from './Components/Login/Login'
 import Register from './Components/Register/Register'
-import ForgetPassword from './Components/ForgetPassword/ForgetPassword'
 import Category from './Components/Category/Category'
 import SubCategory from './Components/SubCategory/SubCategory'
-import Admin from './Components/LayoutAdmin/LayoutAdmin'
 import DashBoard from './Components/Dashboard/DashBoard'
 import LayOutAdmin from './Components/Layout/LayOutAdmin'
 import CreateCategory from './Components/CreateCategory/CreateCategory'
@@ -22,8 +17,16 @@ import Profile from './Components/Profile/Profile'
 import CreateSubCategory from './Components/CreateSubCategory/CreateSubCategory'
 import AddProduct from './Components/AddProduct/AddProduct'
 import Wishlist from './Components/WishList/WishList'
-
-
+import { ToastContainer } from 'react-toastify'
+import ProductDetails from './Components/ProductDetails/ProductDetails'
+import OrderForm from './Components/OrderForm/OrderForm'
+import ForgetPassword from './Components/ForgetPassword/ForgetPassword'
+import ResetPassword from './Components/ForgetPassword/ResetPassword'
+import Orders from './Components/OrderForm/Orders'
+import UpdateProduct from './Components/UpdateProduct/UpdateProduct'
+import AllOrders from './Components/AllOrders/AllOrders'
+import NotFound from './Components/NotFound/NotFound'
+import UpdatePassword from './Components/UpdatePassword/UpdatePassword'
 function App() {
   const router = createBrowserRouter([
     {
@@ -41,9 +44,8 @@ function App() {
           path: "/register",
           element: <Register />,
         },
-        {path: "/forgetPassword",
-        element: <ForgetPassword />,
-        },
+       
+      
         {
           path: "/category",
           element: <Category />,
@@ -69,6 +71,36 @@ function App() {
         },{
           path:"wishlist",
           element:<Wishlist/>
+        },{
+          path:"/productDetails/:id",
+          element:<ProductDetails/>
+        },{
+          path:"forgetPassword",
+          element:<ForgetPassword/>
+        },{
+          path:"resetPassword",
+          element:<ResetPassword/>
+        },{
+          path:"orders",
+          element:<Orders/>
+        },
+        {
+          path:"orderForm",
+          element:<OrderForm/>
+        },
+        {
+          path:"updateProduct/:id",
+          element:<UpdateProduct/>
+        },
+        {
+          path:"allOrder",
+          element:<AllOrders/>
+        },{
+          path:"*",
+          element:<NotFound/>
+        },{
+          path:"updatePassword",
+          element:<UpdatePassword/>
         },
         {
           path:"/layoutAdmin",
@@ -97,8 +129,8 @@ function App() {
 
   return (
     <>
-     <RouterProvider router={router}></RouterProvider>
-   
+      <ToastContainer/>
+      <RouterProvider router={router}></RouterProvider>
     </>
   )
 }

@@ -25,8 +25,8 @@ const Brands = () => {
   }, []);
 
   return (
-    <div className="bg-beige min-h-screen mt-20 py-10 px-4 md:px-10">
-      <h1 className="text-3xl md:text-4xl font-bold text-center mb-10">البراندات</h1>
+    <div className="bg-beige container  mx-auto min-h-screen mt-20 py-10 px-4 md:px-10">
+      <h1 className="text-3xl dark:text-amber-500 md:text-4xl font-bold text-center mb-10">Brands</h1>
       {isLoading ? (
         <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
           {/* Placeholder أثناء اللودينج */}
@@ -46,7 +46,7 @@ const Brands = () => {
           {brands.map((brand) => (
             <div
               key={brand._id}
-              className="bg-white p-6 rounded-2xl shadow-amber-400 shadow-md flex flex-col items-center text-center"
+              className="bg-white p-6 rounded-2xl hover:scale-105 transition-all duration-300 hover:shadow-2xl hover:shadow-yellow-500 shadow-amber-400 shadow-md flex flex-col items-center text-center"
             >
               <div className="mb-4">
                 {brand.image?.secure_url ? (

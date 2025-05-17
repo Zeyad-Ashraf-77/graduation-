@@ -1,81 +1,119 @@
-import React, { useState } from 'react';
+import axios from 'axios';
+import React, {  useEffect, useState } from 'react';
+import { ToastContainer, toast } from "react-toastify";
+import { Product } from '../Interfaces/Interfaces';
 
-type Product = {
-  id: string;
-  name: string;
-  image: string;
-  category: string;
-  price: number;
-};
+
 
 const Wishlist: React.FC = () => {
-  const [wishlist, setWishlist] = useState<Product[]>([
-    {
-      id: '1',
-      name: 'Handmade Necklace',
-      image: 'https://via.placeholder.com/300x200?text=Handmade+Necklace',
-      category: 'Jewelry',
-      price: 25.99,
-    },
-    {
-      id: '2',
-      name: 'Knitted Scarf',
-      image: 'https://via.placeholder.com/300x200?text=Knitted+Scarf',
-      category: 'Accessories',
-      price: 18.5,
-    },
-    {
-      id: '3',
-      name: 'Clay Mug',
-      image: 'https://via.placeholder.com/300x200?text=Clay+Mug',
-      category: 'Home Decor',
-      price: 32,
-    },
-  ]);
+  const [wishlist, setWishlist] = useState<Product[]>([]);
 
-  const addToCart = (productId: string) => {
-    console.log('Add to cart:', productId);
-    // هنا تحط منطق الإضافة للسلة
-  };
 
-  const removeFromWishlist = (productId: string) => {
-    setWishlist((prev) => prev.filter((item) => item.id !== productId));
-  };
+  async function gitWishList() {
+    try {
+        const {data}= await axios.get(`https://project1-kohl-iota.vercel.app/product/r/washlist`, {
+            headers: {
+                Authorization: localStorage.getItem("authorization") || "",
+                "Content-Type": "application/json",
+            },
+        }) 
+        console.log(data.user.washlist);
+        setWishlist(data.user.washlist);
+        
+    } catch (error) {
+      console.error("Error fetching wishlist:", error);
+        
+    }
+    
+  }
+  async function addToCart(productId: string) {
+    try {
+     
+      const { data } = await axios.post(
+        `https://project1-kohl-iota.vercel.app/cart/create`,
+        {
+          productId: productId,
+          quantity: 1,
+        },
+        {
+          headers: {
+            Authorization: localStorage.getItem("authorization") || "",
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(data);
+        toast.success("Product added to cart successfully!");
+    } catch (error) {
+      console.log("Error adding to cart:", error);
+    
+    } 
+   
+    
+  }
+
+  async function removeFromWishlist(productId: string) {
+    try {
+      const { data } = await axios.patch(
+        `https://project1-kohl-iota.vercel.app/product/washlist/${productId}`,
+        {},
+        {
+          headers: {
+            Authorization: localStorage.getItem("authorization") || "",
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(data);
+      toast.success("Product removed from wishlist successfully!");
+      gitWishList();
+    } catch (error) {
+      console.log("Error removing from wishlist:", error);
+    }
+  }
+  useEffect(() => {
+    gitWishList();
+  }, []);
+
 
   return (
     <div className="bg-[#F2F0EF] mt-20 min-h-screen p-6">
-      <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">
+        <ToastContainer />
+      <h1 className=" font-bold mb-6 text-center text-yellow-800">
         My Wishlist
       </h1>
 
       {wishlist.length === 0 ? (
-        <p className="text-center text-gray-500">Your wishlist is empty.</p>
+        
+        <div className="text-center">
+          <h2 className=" font-bold mb-4">Your wishlist is empty</h2>
+        </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {wishlist.map((item) => (
             <div
               key={item.id}
-              className="bg-white border rounded-lg shadow-sm p-4 flex flex-col hover:shadow-md transition"
+              className="bg-white hover:scale-102 duration-300 transition-all ease-in-out  border-amber-400 border-2 rounded-lg shadow-sm p-4 flex flex-col hover:shadow-md "
             >
               <img
-                src={item.image}
+                src={item.imageCover.secure_url}
                 alt={item.name}
                 className="h-48 object-cover rounded-md mb-4"
               />
               <h2 className="text-lg font-semibold text-gray-800">{item.name}</h2>
-              <p className="text-sm text-gray-600">{item.category}</p>
+              <p className="text-sm text-gray-600">{item.describtion}</p>
               <p className="text-md text-pink-700 font-bold mt-2">${item.price}</p>
 
               <div className="mt-4 flex justify-between gap-2">
                 <button
                   onClick={() => addToCart(item.id)}
-                  className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 text-sm"
+                  className="bg-green-500 cursor-pointer text-white px-6 py-3 rounded-xl hover:bg-green-600 text-sm"
                 >
                   Add to Cart
                 </button>
                 <button
                   onClick={() => removeFromWishlist(item.id)}
-                  className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm"
+                  className="bg-red-500 cursor-pointer text-white px-6 py-3 rounded-xl hover:bg-red-600 text-sm"
                 >
                   Remove
                 </button>

@@ -16,6 +16,8 @@ export default function AdminDashboard() {
   const [categoryDs, setCategoryDs] = useState<{ _id: string; name: string }[]>([]);
   const [brandsDs, setBrandsDs] = useState<{ _id: string; name: string }[]>([]);
   const [userDs, setUserDs] = useState<{ _id: string; name: string; email: string; role: string; isBlocked: boolean }[]>([]);
+  const [ordersDs, setOrdersDs] = useState<{ _id: string; orderId: string; date: string; customer: string }[]>([]);
+  const [productsDs, setProductsDs] = useState<{ _id: string; name: string; price: number }[]>([]);
   const [categoryNum, setCategoryNum] = useState(0);
   const [userNum, setUserNum] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -64,6 +66,13 @@ export default function AdminDashboard() {
       setIsLoading(false);
     }
   }
+  async function getOrders() {
+    const{data}= await axios.get(`https://project1-kohl-iota.vercel.app/order`, {
+      headers: { Authorization: localStorage.getItem("authorization") },
+    });
+    console.log(data.orders);
+    setOrdersDs(data.orders);
+  }
 
   async function delateBrands(id: string) {
     try {
@@ -82,6 +91,7 @@ export default function AdminDashboard() {
     getCategory();
     getBrands();
     getDashBoard();
+    getOrders();
   }, []);
 
   const toggleBlockStatus = (id: number) => {
@@ -115,7 +125,7 @@ export default function AdminDashboard() {
           <p className='dark:text-white' >Categories</p>
         </div>
         <div className="rounded-2xl hover:scale-105 transition-all shadow-lg shadow-yellow-500 bg-stone-100 dark:bg-gray-800 p-4 text-center">
-          <p className="text-4xl  text-[#4e342e] dark:text-amber-500 font-bold">20</p>
+          <p className="text-4xl  text-[#4e342e] dark:text-amber-500 font-bold">{ordersDs.length}</p>
           <p className='dark:text-white' >Orders</p>
         </div>
         <div className="rounded-2xl hover:scale-105 transition-all shadow-lg shadow-yellow-500 bg-stone-100 dark:bg-gray-800 p-4 text-center">
@@ -131,8 +141,9 @@ export default function AdminDashboard() {
           <h2 className="text-lg bg-[#432d0c] dark:bg-amber-700 text-white p-4 rounded-t-2xl font-semibold mb-4">
             Recent Orders
           </h2>
-          <table className="min-w-full text-sm">
-            <thead className="border-b">
+          <div className="max-h-[400px] overflow-y-auto">
+          <table onClick={()=>navigate('/orders')} className="min-w-full cursor-pointer text-sm">
+            <thead className="border-b sticky top-0 bg-stone-100 dark:bg-gray-800">
               <tr>
                 <th className="text-left text-[#4e342e] dark:text-amber-500 py-2 px-2">Order ID</th>
                 <th className="text-left text-[#4e342e] dark:text-amber-500 py-2 px-2">Date</th>
@@ -140,14 +151,16 @@ export default function AdminDashboard() {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td className="py-2 text-[#4e342e] dark:text-gray-200 px-2">#1001</td>
-                <td className="py-2 text-[#4e342e] dark:text-gray-200 px-2">04/22/2024</td>
-                <td className="py-2 text-[#4e342e] dark:text-gray-200 px-2">John Doe</td>
-              </tr>
-              {/* Add more rows as needed */}
+              {ordersDs.slice(0, 10).map((order, index) => (
+                <tr key={index}>
+                  <td className="py-2 text-[#4e342e] dark:text-gray-200 px-2">{order.id}</td>
+                  <td className="py-2 text-[#4e342e] dark:text-gray-200 px-2">{order.updatedAt}</td>
+                  <td className="py-2 text-[#4e342e] dark:text-gray-200 px-2">{order.address}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
+        </div>
         </div>
 
         {/* Manage Categories */}
@@ -239,12 +252,12 @@ export default function AdminDashboard() {
           </thead>
           <tbody>
             {userDs.map((user) => (
-              <tr key={user.id} className="border-b  dark:border-green-50 ">
-                <td className="px-4 dark:text-white  py-2">{user.id}</td>
-                <td className="px-4 dark:text-white  py-2">{user.name}</td>
-                <td className="px-4 dark:text-white  py-2">{user.email}</td>
-                <td className="px-4 dark:text-white  py-2">{user.role}</td>
-                <td className="px-4 dark:text-white  py-2">
+              <tr key={user._id} className="border-b hover:bg-amber-100 dark:border-green-50 ">
+                <td className="px-4  dark:text-white  py-2">{user._id}</td>
+                <td className="px-4  dark:text-white  py-2">{user.name}</td>
+                <td className="px-4  dark:text-white  py-2">{user.email}</td>
+                <td className="px-4  dark:text-white  py-2">{user.role}</td>
+                <td className="px-4  dark:text-white  py-2">
                   <span className={user.isBlocked ? 'text-red-500' : 'text-green-500'}>
                     {user.isBlocked ? 'Blocked' : 'Active'}
                   </span>

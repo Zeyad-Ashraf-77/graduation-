@@ -1,8 +1,11 @@
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
+import { toast, ToastContainer } from 'react-toastify';
+import { FaSpinner } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 interface Category {
   _id: string;
@@ -24,6 +27,7 @@ export default function AddProduct() {
   const [brands, setBrands] = useState<Brand[]>([]);
   const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const navigate = useNavigate();
 
   async function getCategory() {
     try {
@@ -87,13 +91,22 @@ export default function AddProduct() {
     }),
     onSubmit: async (values) => {
       try {
+        setIsLoading(true);
         console.log('Formik Values:', values);
         const formData = new FormData();
         Object.entries(values).forEach(([key, value]) => {
           if (key === 'images' && Array.isArray(value)) {
             value.forEach((img) => formData.append('images', img));
           } else if (key === 'imageCover' && value) {
-            formData.append('imageCover', value);
+            // Check if value is a File object before appending
+            if (value instanceof File) {
+              formData.append('imageCover', value);
+            } else if (Array.isArray(value) && value.length > 0 && value[0] instanceof File) {
+              // If it's an array of Files, use the first one
+              formData.append('imageCover', value[0]);
+            } else if (typeof value === 'string') {
+              formData.append('imageCover', value);
+            }
           } else {
             formData.append(key, String(value));
           }
@@ -111,11 +124,16 @@ export default function AddProduct() {
           }
         );
 
-        alert('Product created successfully!');
+        toast.success('Product created successfully!');
         console.log(response.data);
+        setTimeout(() => {
+          navigate("/product");
+        }, 1500);
       } catch (error) {
         console.error('Error creating product:', error);
-        alert('Failed to create product. Please try again.');
+        toast.error('Failed to create product. Please try again.');
+      } finally {
+        setIsLoading(false);
       }
     },
   });
@@ -145,6 +163,8 @@ export default function AddProduct() {
   }, [formik.values.category]);
 
   return (
+    <>  
+    <ToastContainer />
     <form
       onSubmit={formik.handleSubmit}
       className="max-w-xl mt-32 mx-auto p-6 bg-[#f9f9f6] rounded-2xl shadow-lg space-y-5 border border-gray-300"
@@ -198,7 +218,7 @@ export default function AddProduct() {
         >
           <option value="">Select Category</option>
           {categories.map((cat) => (
-            <option key={cat._id} value={cat.name}>
+            <option key={cat._id} value={cat._id}>
               {cat.name}
             </option>
           ))}
@@ -290,8 +310,9 @@ export default function AddProduct() {
         type="submit"
         className="w-full bg-[#a9690a] text-white py-2 rounded-lg hover:bg-yellow-500 hover:text-black transition"
       >
-        Submit
+        {isLoading ? <FaSpinner className="animate-spin text-2xl text-center mx-auto " /> : "Submit"}
       </button>
     </form>
+    </>
   );
 }

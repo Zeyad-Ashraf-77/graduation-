@@ -335,22 +335,27 @@ async function getCategories(){
                   <h5 className="text-xl font-bold text-[#4e342e] mb-4">
                     {category.name.toUpperCase()}
                   </h5>
-                  <div className="space-y-3">
-                    <button
-                      type="button"
-                      onClick={() => deleteCategory(category._id)}
-                      className="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg font-medium transition duration-300"
-                    >
-                      Delete
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setEditingCategory(category)}
-                      className="w-full bg-[#4e342e] hover:bg-[#6d4c41] text-white py-2 px-4 rounded-lg font-medium transition duration-300"
-                    >
-                      Update
-                    </button>
-                  </div>
+                  {localStorage.getItem('id')===category.userId ? (
+                      <div className="space-y-3">
+                      <button
+                        type="button"
+                        onClick={() => deleteCategory(category._id)}
+                        className="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg font-medium transition duration-300"
+                      >
+                        Delete
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setEditingCategory(category)}
+                        className="w-full bg-[#4e342e] hover:bg-[#6d4c41] text-white py-2 px-4 rounded-lg font-medium transition duration-300"
+                      >
+                        Update
+                      </button>
+                    </div>
+                  ):<div>
+                    <p className="text-red-500 text-center p-2 bg-red-100 rounded-2xl ">You are not authorized to delete this category</p>
+                  </div> }
+                
                 </div>
               </div>
             ))}

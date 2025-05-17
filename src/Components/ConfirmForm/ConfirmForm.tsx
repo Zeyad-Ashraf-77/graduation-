@@ -1,23 +1,26 @@
 import axios from 'axios';
-import {  useFormik } from 'formik';
-// import React from 'react'
+import { useFormik } from 'formik';
 import { ConfirmFormProps, FormConfirmation } from '../Interfaces/Interfaces';
 import { useNavigate } from 'react-router-dom';
-// import React from 'react';
 
 
 export default function ConfirmForm({ email }: ConfirmFormProps) {
-    const navigate =  useNavigate();   
-    async function handleSubmit(values: FormConfirmation){
-        const { data } = await axios.patch(
-            `https://project1-kohl-iota.vercel.app/users/confirmMail`,
-            values
-        );
-        console.log(data);
-        if(data.confirmed==true){
-          navigate('/login')
+    const navigate = useNavigate();
+    
+    const handleSubmit = async (values: FormConfirmation) => {
+        try {
+            const { data } = await axios.patch(
+                `https://project1-kohl-iota.vercel.app/users/confirmMail`,
+                values
+            );
+            console.log(data);
+            if(data.confirmed === true){
+                navigate('/login');
+            }
+        } catch (error) {
+            console.error('Error confirming email:', error);
         }
-    }
+    };
 
     const formik = useFormik({
         initialValues: {
@@ -29,8 +32,9 @@ export default function ConfirmForm({ email }: ConfirmFormProps) {
 
     return (
         <>
-            {/* <div className='"bg-red-100 dark:bg-gray-900 mt-10'> */}
-                <form onSubmit={formik.handleSubmit} className="max-w-md bg-gray-200  p-10 rounded-2xl mt-10 mx-auto">
+        <div className='h-screen  flex items-center justify-center'>
+
+                <form onSubmit={formik.handleSubmit} className="max-w-md bg-gray-200  p-10 rounded-2xl   mx-auto">
                     <h2 className="font-bold text-center mb-5">Confirm your email</h2>
 
                     <div className="mb-5">
@@ -51,15 +55,15 @@ export default function ConfirmForm({ email }: ConfirmFormProps) {
                     </div>
                     <div className="mb-5">
                         <label
-                            htmlFor="otb"
+                            htmlFor="otp"
                             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                         >
-                            Your otb
+                            Your OTP
                         </label>
                         <input
                             {...formik.getFieldProps('otp')}
                             type="number"
-                            id="otb"
+                            id="otp"
                             name="otp"
                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-amber-500 focus:border-amber-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-amber-500 dark:focus:border-amber-500"
                         />
@@ -72,6 +76,8 @@ export default function ConfirmForm({ email }: ConfirmFormProps) {
                         Confirm
                     </button>
                 </form>
+        </div>
+            {/* <div className='"bg-red-100 dark:bg-gray-900 mt-10'> */}
             {/* </div> */}
         </>
     );

@@ -1,5 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
-import { UserContext } from "../Context/UserContext";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import type { CategoryType } from "../Interfaces/Interfaces";
 import { Link } from "react-router-dom";
@@ -29,8 +28,8 @@ export default function Category() {
   return (
     <>
       {/* Hero Section */}
-      <div className="py-32 bg-[url('/src/assets/images/pin/category.jpg')] hero bg-cover bg-center bg-slate-900 text-white text-center dark:bg-gray-900">
-        <h1 className="text-4xl font-bold dark:text-amber-500">Cadiz Collection</h1>
+      <div className="py-32 bg-[url('../assets/images/pin/slider4 (4).jpeg')] hero bg-cover bg-center bg-slate-900 text-white text-center dark:bg-gray-900">
+        <h1 className="    font-bold dark:text-amber-500">Cadiz Collection</h1>
         <p className="mt-2 text-lg dark:text-gray-400">
           Lorem ipsum dolor sit amet consectetur adipisicing elit.
         </p>
@@ -38,7 +37,7 @@ export default function Category() {
 
       {/* Categories Section */}
       <div className="mt-10 container mx-auto light:bg-yellow-500 p-10 rounded-2xl dark:bg-gray-800 ">
-        <h2 className="text-center text-3xl font-bold mb-6 dark:text-amber-500">
+        <h2 className="text-center font-bold mb-6 dark:text-amber-500">
           Browse Categories
         </h2>
 
@@ -77,7 +76,7 @@ export default function Category() {
                       </h5>
                     </a>
                     <Link
-                      to={`/Subcategory/${c.name}`}
+                      to={`/Subcategory/${c._id}`}
                       className="inline-flex btn items-center w-full text-center px-3 py-2 text-sm font-medium mx-auto text-white bg-amber-800 rounded-lg hover:bg-amber-500 focus:ring-4 focus:outline-none focus:ring-amber-300 dark:bg-amber-700 dark:hover:bg-amber-600 dark:focus:ring-amber-800"
                     >
                       Browse

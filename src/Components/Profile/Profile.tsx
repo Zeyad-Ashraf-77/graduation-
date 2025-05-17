@@ -1,18 +1,15 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
-import { log } from "console";
+import { useNavigate } from "react-router-dom";
+import { User } from "../Interfaces/Interfaces";
 
 const Profile = () => {
-  interface User {
-    name: string;
-    lastName: string;
-    email: string;
-    role?: string;
-    address?: string;
-  }
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  
   
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
 
   function getUserProfile() {
     axios
@@ -47,7 +44,19 @@ const Profile = () => {
   return (
     <div className="min-w-2xl  shadow-amber-400 container mx-auto p-6 bg-white rounded-2xl shadow-md mt-32 space-y-6">
       <div className="flex items-center gap-6">
-        <div className="text-6xl">🧑🏻</div>
+        <div className="text-6xl">
+          {user.image ? (
+            <img
+              src={user.image.secure_url}
+              alt="Profile"
+              className="w-16 h-16 rounded-full"
+            />
+          ) : (
+            <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
+              <span className="text-2xl font-bold text-gray-600">🧑🏻</span>
+            </div>
+          )}
+        </div>
         <div>
           <h1 className="text-2xl font-bold text-gray-800">{user.name }</h1>
           <p className="text-gray-500">{user.email}</p>
@@ -66,11 +75,11 @@ const Profile = () => {
       </div>
 
       <div className="flex gap-4 mt-6">
-        <button className="flex-1 bg-indigo-700 text-white py-2 rounded-lg hover:bg-indigo-800 transition">
-          Edit Profile
+        <button onClick={() => navigate("/updatePassword")} className="flex-1 bg-indigo-700 text-white py-2 rounded-lg hover:bg-indigo-800 transition">
+          Update Password
         </button>
-        <button className="flex-1 border border-red-500 text-red-500 py-2 rounded-lg hover:bg-red-100 transition">
-          Logout
+        <button onClick={() => navigate("/allOrder")} className="flex-1 border border-red-500 text-red-500 py-2 rounded-lg hover:bg-red-100 transition">
+          My Orders
         </button>
       </div>
     </div>

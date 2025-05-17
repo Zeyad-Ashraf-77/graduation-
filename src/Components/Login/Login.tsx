@@ -190,6 +190,9 @@ export default function Register() {
         const bearerToken = ` Bearer ${data.access_token}`;
         localStorage.setItem("authorization", bearerToken);
         localStorage.setItem("role", data.user.role);
+        localStorage.setItem("email", data.user.email);
+        localStorage.setItem("id", data.user.id);
+        localStorage.setItem("name", data.user.name);
         navigate("/");
       }
     } catch (error) {

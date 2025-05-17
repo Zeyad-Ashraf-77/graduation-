@@ -63,6 +63,10 @@ export default function Categories() {
   return (
     <>
       <div className="py-5 transition-colors duration-500 bg-white dark:bg-gray-900 px-4">
+            
+            <h2 className="font-bold text-center mb-10 dark:text-amber-500">
+              All Brands
+            </h2>
         <div className="container mx-auto">
           <Slider {...settings}>
             {images.map((img: any) => (

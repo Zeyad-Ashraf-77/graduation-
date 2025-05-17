@@ -1,20 +1,37 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import logo from "../../assets/images/61d71a78dd3eefe4e069187f4699af9e.jpg";
-import { CiMenuBurger } from "react-icons/ci";
-import { useContext, useState, useEffect } from "react";
-import { UserContext } from "../Context/UserContext";
+import { CiLogin, CiMenuBurger } from "react-icons/ci";
+import { FaCartArrowDown, FaUserCircle } from "react-icons/fa";
+import { MdDarkMode, MdOutlineAdminPanelSettings, MdOutlineLightMode } from "react-icons/md";
+import { useEffect, useState } from "react";
+import { BsFillChatHeartFill } from "react-icons/bs";
+import { User } from "../Interfaces/Interfaces";
+import axios from "axios";
 import { CgProfile } from "react-icons/cg";
-import { FaUserCircle } from "react-icons/fa";
-import { MdDarkMode, MdOutlineLightMode } from "react-icons/md";
 
 export default function Navbar() {
   const navigate = useNavigate();
-  const { userToken } = useContext(UserContext);
-
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
 
+  const [user, setUser] = useState<User | null>(null);
+
+  function getUserProfile() {
+    axios
+    .get("https://project1-kohl-iota.vercel.app/users/profile",{
+        headers: { Authorization: localStorage.getItem("authorization") },
+    })
+    .then((res) => {
+      setUser(res.data.user);
+       console.log(res.data.user);
+   
+    })
+    .catch((err) => {
+      console.error("Error fetching profile:", err);
+
+    });
+  }
   // Toggle Dark Mode
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
@@ -26,6 +43,7 @@ export default function Navbar() {
   };
 
   useEffect(() => {
+    getUserProfile();
     // Check system preference for dark mode
     if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
       setIsDarkMode(true);
@@ -36,17 +54,23 @@ export default function Navbar() {
   function handleLogout() {
     localStorage.removeItem("authorization");
     localStorage.removeItem("role");
+    setIsProfileDropdownOpen(false);
     navigate("/login");
+  }
+  
+  // Close dropdown after selecting an option
+  function closeProfileDropdown() {
+    setIsProfileDropdownOpen(false);
   }
 
   return (
     <>
       <div className="container mx-auto">
-        <nav className="navbar  fixed top-3 z-50 w-[90%] rounded-3xl border-gray-200 bg-white dark:bg-gray-900 dark:border-gray-700">
-          <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+        <nav className="navbar mt-3 p-0.5 fixed top-0 z-50 w-[90%] rounded-3xl border-gray-200 bg-white dark:bg-gray-900 dark:border-gray-700">
+          <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto px-4 py-2">
             <a
               href="#"
-              className="flex  items-center space-x-3 rtl:space-x-reverse"
+              className="flex items-center space-x-3 rtl:space-x-reverse"
             >
               <img
                 src={logo}
@@ -58,9 +82,8 @@ export default function Navbar() {
               </span>
             </a>
             <button
-              data-collapse-toggle="navbar-dropdown"
               type="button"
-              className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+              className="inline-flex items-center p-2 w-10 h-10 ml-auto justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
               aria-controls="navbar-dropdown"
               aria-expanded={isDropdownOpen}
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -68,20 +91,16 @@ export default function Navbar() {
               <span className="sr-only">Open main menu</span>
               <CiMenuBurger className="text-3xl" />
             </button>
-          <div className="flex items-center justify-between ">
-              <div
-              className={`${
-                isDropdownOpen ? "block" : "hidden"
-              } w-full md:block md:w-auto`}
-              id="navbar-dropdown"
-            >
-              <ul className="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 bg-gray-100 md:bg-transparent dark:bg-gray-900 md:dark:bg-gray-900 dark:border-gray-700">
+            <div className="flex items-center justify-between">
+              {/* Desktop nav: always visible */}
+              <div className="hidden md:flex flex-row items-center justify-end gap-4 w-full">
+              <ul className="flex flex-row font-medium p-0 m-0 border-0 rounded-lg space-x-4 rtl:space-x-reverse bg-transparent dark:bg-transparent dark:border-gray-700">
                 {localStorage.getItem("authorization") ? (
                   <>
                     <li>
                       <NavLink
                         to="/"
-                        className="block py-2 px-3 text-gray-900 font-medium  bg-amber-700 rounded-sm md:bg-transparent md:text-amber-700 md:p-0 md:dark:text-amber-500 dark:bg-amber-600 md:dark:bg-transparent"
+                        className="block py-2 px-3 text-gray-900 font-medium bg-amber-700 rounded-sm md:bg-transparent md:text-white md:p-0 md:dark:text-amber-500 dark:bg-amber-600 md:dark:bg-transparent"
                         aria-current="page"
                       >
                         Home
@@ -90,15 +109,15 @@ export default function Navbar() {
                     <li>
                       <NavLink
                         to="/category"
-                        className="block py-0 px-3 text-gray-900 font-medium rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-700 md:p-0 dark:text-white md:dark:hover:text-amber-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                        className="block py-0 px-3 text-gray-900 font-medium rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-w md:p-0 dark:text-white md:dark:hover:text-amber-500 dark:hover:bgw dark:hover:text-white md:dark:hover:bg-transparent"
                       >
-                        Category
+                      Categories
                       </NavLink>
                     </li>
                     <li>
                       <NavLink
                         to="/product"
-                        className="block py-0 px-3 text-gray-900 font-medium rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-700 md:p-0 dark:text-white md:dark:hover:text-amber-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                        className="block py-0 px-3 text-gray-900 font-medium rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-w md:p-0 dark:text-white md:dark:hover:text-amber-500 dark:hover:bgw dark:hover:text-white md:dark:hover:bg-transparent"
                       >
                         Products
                       </NavLink>
@@ -106,7 +125,7 @@ export default function Navbar() {
                     <li>
                       <NavLink
                         to="/brand"
-                        className="block py-0 px-3 text-gray-900 font-medium rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-700 md:p-0 dark:text-white md:dark:hover:text-amber-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                        className="block py-0 px-3 text-gray-900 font-medium rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-w md:p-0 dark:text-white md:dark:hover:text-amber-500 dark:hover:bgw dark:hover:text-white md:dark:hover:bg-transparent"
                       >
                         Brands
                       </NavLink>
@@ -116,89 +135,247 @@ export default function Navbar() {
                         to="/cart"
                         className="block py-0 px-3 text-gray-900 font-medium rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-700 md:p-0 dark:text-white md:dark:hover:text-amber-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
                       >
-                        Cart
+                        <div className=" p-1 rounded-full">
+
+                        <FaCartArrowDown className="text-2xl text-white   " />
+                        </div>
+
                       </NavLink>
+                      
                     </li>
+                
                     <li>
                       <NavLink
                         to="/wishList"
                         className="block py-0 px-3 text-gray-900 font-medium rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-700 md:p-0 dark:text-white md:dark:hover:text-amber-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
                       >
-                        wishlist
+                        <div className="bg-amber-500 p-1 rounded-full">
+
+                        <BsFillChatHeartFill className="text-2xl text-white " />
+                        </div>
                       </NavLink>
                     </li>
-                    {/* Dropdown for Profile, Admin, Logout */}
-                    <li className="relative">
-                      <button
-                        onClick={() =>
-                          setIsProfileDropdownOpen(!isProfileDropdownOpen)
-                        }
-                        className="flex items-center gap-2 py-2 px-3 text-gray-900 font-medium rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-700 md:p-0 dark:text-white md:dark:hover:text-amber-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                  </>
+                ) : (
+                  <>
+                    <li>
+                      <NavLink
+                        to="/login"
+                        className="block py-0 px-3 text-gray-900 font-medium rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-700 md:p-0 dark:text-white md:dark:hover:text-amber-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
                       >
-                        <FaUserCircle className="text-2xl" />
-                        
+                        Login
+                      </NavLink>
+                    </li>
+                    <li>
+                      <NavLink
+                        to="/register"
+                        className="block py-0 px-3 text-gray-900 font-medium rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-700 md:p-0 dark:text-white md:dark:hover:text-amber-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                      >
+                        Register
+                      </NavLink>
+                    </li>
+                  </>
+                )}
+              </ul>
+              {/* Dark Mode Toggle */}
+             
+              {/* Profile Dropdown (click) */}
+              {localStorage.getItem("authorization") && (
+                <div className="relative">
+                  <button
+                    onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+                    className="flex items-center gap-2 py-2 px-3 text-gray-900 font-medium rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-700 md:p-0 dark:text-white md:dark:hover:text-amber-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                  >
+                    {user?.image ? (
+                      <img
+                        src={user.image.secure_url}
+                        alt="Profile"
+                        className="w-9 h-9 rounded-full"
+                      />
+                    ) : (
+                      <FaUserCircle className="text-3xl text-black dark:text-white" />
+                    )}
+                  </button>
+                  <ul
+                    className={`absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 transition-opacity duration-300 ease-in-out ${isProfileDropdownOpen ? 'block' : 'hidden'}`}
+                  >
+            
+                    <li>
+                      <NavLink
+                        to="/profile"
+                        onClick={closeProfileDropdown}
+                        className="block px-4 py-2 flex items-center gap-2 text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
+                      > 
+                     <CgProfile className="text-2xl" />
+                     Profile
+                      </NavLink>
+                    </li>
+                    {localStorage.getItem("role") === "admin" && (
+                      <li>
+                        <NavLink
+                          to="/layoutAdmin"
+                          onClick={closeProfileDropdown}
+                          className=" px-4 py-2 flex items-center gap-2 text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
+                        >
+                        <MdOutlineAdminPanelSettings className="text-2xl" />
+                          Admin
+                        </NavLink>
+                      </li>
+                    )}
+                    <li>
+                      <button
+                        onClick={handleLogout}
+                        className=" w-full text-left px-4 py-2 flex items-center gap-2 text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
+                      >
+                        <CiLogin className="text-2xl" />
+
+                        Logout
                       </button>
-                      {isProfileDropdownOpen && (
-                        <ul className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
+                    </li>
+                    <li>
+                    <div className="text-center">
+                    <button
+                      onClick={toggleDarkMode}
+                      className="p-2 rounded-full bg-black text-white hover:bg-gray-800 transition"
+                    >
+                      {isDarkMode ? <MdDarkMode className="" /> : <MdOutlineLightMode className="" />}
+                    </button>
+                  </div>
+                    </li>
+                  </ul>
+                </div>
+              )}
+            </div>
+              {/* Mobile nav: centered dropdowns */}
+              {isDropdownOpen && (
+                <div className="fixed top-20 left-1/2 -translate-x-1/2 mx-auto w-11/12 max-w-xs z-50 flex flex-col gap-3 md:hidden bg-transparent">
+                  <ul className="flex flex-col font-medium p-4 border border-gray-100 rounded-lg bg-gray-100 dark:bg-gray-900 dark:border-gray-700 shadow-lg">
+                    {localStorage.getItem("authorization") ? (
+                      <>
+                        <li>
+                          <NavLink
+                            to="/"
+                            className="block py-2 px-3 text-gray-900 font-medium bg-amber-700 rounded-sm md:bg-transparent md:text-white md:p-0 md:dark:text-amber-500 dark:bg-amber-600 md:dark:bg-transparent"
+                            aria-current="page"
+                          >
+                            Home
+                          </NavLink>
+                        </li>
+                        <li>
+                          <NavLink
+                            to="/category"
+                            className="block py-0 px-3 text-gray-900 font-medium rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-w md:p-0 dark:text-white md:dark:hover:text-amber-500 dark:hover:bgw dark:hover:text-white md:dark:hover:bg-transparent"
+                          >
+                            Categories
+                          </NavLink>
+                        </li>
+                        <li>
+                          <NavLink
+                            to="/product"
+                            className="block py-0 px-3 text-gray-900 font-medium rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-w md:p-0 dark:text-white md:dark:hover:text-amber-500 dark:hover:bgw dark:hover:text-white md:dark:hover:bg-transparent"
+                          >
+                            Products
+                          </NavLink>
+                        </li>
+                        <li>
+                          <NavLink
+                            to="/brand"
+                            className="block py-0 px-3 text-gray-900 font-medium rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-w md:p-0 dark:text-white md:dark:hover:text-amber-500 dark:hover:bgw dark:hover:text-white md:dark:hover:bg-transparent"
+                          >
+                            Brands
+                          </NavLink>
+                        </li>
+                        <li>
+                          <NavLink
+                            to="/cart"
+                            className="block py-0 px-3 text-gray-900 font-medium rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-700 md:p-0 dark:text-white md:dark:hover:text-amber-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                          >
+                            Cart
+                          </NavLink>
+                        </li>
+                        <li>
+                          <NavLink
+                            to="/wishList"
+                            className="block py-0 px-3 text-gray-900 font-medium rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-700 md:p-0 dark:text-white md:dark:hover:text-amber-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                          >
+                            Wishlist
+                          </NavLink>
+                        </li>
+                      </>
+                    ) : (
+                      <>
+                        <NavLink
+                          to="/login"
+                          className="block py-0 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-700 md:p-0 dark:text-white md:dark:hover:text-amber-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                        >
+                        Login
+                        </NavLink>
+                        <NavLink
+                          to="/register"
+                          className="block py-0 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-700 md:p-0 dark:text-white md:dark:hover:text-amber-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                        >
+                         Register
+                        </NavLink>
+                      </>
+                    )}
+                  </ul>
+                  {/* Dark Mode Toggle */}
+                  <div className="relative w-full">
+                    <button
+                      onClick={toggleDarkMode}
+                      className="w-full flex items-center justify-center p-2 rounded-full bg-black text-white hover:bg-gray-800 transition"
+                    >
+                      {isDarkMode ? <MdDarkMode className="text-2xl" /> : <MdOutlineLightMode className="text-2xl" />}
+                    </button>
+                  </div>
+                  {/* Profile Dropdown (click) */}
+                  {localStorage.getItem("authorization") && (
+                    <div className="relative w-full">
+                      <button
+                        onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+                        className="w-full flex items-center justify-center gap-2 py-2 px-3 text-gray-900 font-medium rounded-sm bg-gray-200 dark:bg-gray-700 dark:text-white"
+                      >
+                        <FaUserCircle className="text-3xl text-black dark:text-white" />
+                      </button>
+                      <ul
+                        className={`w-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 transition-opacity duration-300 ease-in-out ${isProfileDropdownOpen ? 'block' : 'hidden'}`}
+                      >
+                        <li>
+                          <NavLink
+                            to="/profile"
+                            onClick={closeProfileDropdown}
+                            className="block px-4 py-2 text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
+                          >
+                            Profile
+                          </NavLink>
+                        </li>
+                        {localStorage.getItem("role") === "admin" && (
                           <li>
                             <NavLink
-                              to="/profile"
-                              className="block px-4 py-2 text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
-                            >
-                              Profile
-                            </NavLink>
-                          </li>
-                          {localStorage.getItem("role") === "admin" && (
-                              <li>
-                            <NavLink
                               to="/layoutAdmin"
+                              onClick={closeProfileDropdown}
                               className="block px-4 py-2 text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
                             >
                               Admin
                             </NavLink>
                           </li>
-                          )}
-                        
-                          <li>
-                            <button
-                              onClick={handleLogout}
-                              className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
-                            >
-                              SignOut
-                            </button>
-                          </li>
-                        </ul>
-                      )}
-                    </li>
-                  </>
-                ) : (
-                  <>
-                    <NavLink
-                      to="/login"
-                      className="block py-0 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-700 md:p-0 dark:text-white md:dark:hover:text-amber-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
-                    >
-                      Login
-                    </NavLink>
-
-                    <NavLink
-                      to="/register"
-                      className="block py-0 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-700 md:p-0 dark:text-white md:dark:hover:text-amber-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
-                    >
-                      Register
-                    </NavLink>
-                  </>
-                )}
-              </ul>
+                        )}
+                        <li>
+                          <button
+                            onClick={handleLogout}
+                            className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
+                          >
+                            Logout
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
+          
 
-            <button
-              onClick={toggleDarkMode}
-              className="ml-4 p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
-            >
-              {isDarkMode ? <MdDarkMode /> : <MdOutlineLightMode />}
-            </button>
-          </div>
-            {/* زرار تبديل الوضع */}
           </div>
         </nav>
       </div>

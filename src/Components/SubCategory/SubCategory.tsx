@@ -28,10 +28,12 @@ export default function SubCategory() {
        
   return (
     <>
+        <h1 className="mt-28 dark:text-amber-500 md:text-4xl font-bold text-center mb-10">Sub Category</h1>
       <div className="container mx-auto mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5  "  > 
+      
         {subCategory.map((subCategory: any) => (    
 <figure key={subCategory._id} className="relative rounded-2xl shadow-2xl shadow-yellow-600 hover:scale-105 max-w-sm transition-all duration-300 cursor-pointer filter  hover:grayscale-0">
-  <a href="#">
+  <a href="/product">
     <img className="rounded-lg min-w-[400px] min-h-[400px] max-w-[400px] max-h-[400px] object-cover " src={subCategory.image.secure_url} alt="image description" />
   </a>
   <figcaption className="absolute px-4 text-lg text-white bottom-6">
