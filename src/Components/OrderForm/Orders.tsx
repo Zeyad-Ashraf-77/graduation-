@@ -131,7 +131,8 @@ export default function Orders() {
   }
 
   return (
-    <div className="p-4 sm:p-6 container mx-auto bg-[#f9f9f6] dark:bg-gray-900 text-gray-800 dark:text-gray-200 min-h-screen">
+    <div className='bg-[#f9f9f6] dark:bg-gray-900 text-gray-800 dark:text-gray-200 min-h-screen'>
+    <div className="p-4 sm:p-6 container mx-auto">
     <h1 className="mt-20 mb-6 text-center font-bold text-[#4e342e] dark:text-amber-500">My Orders</h1>
       
       {orders.length === 0 ? (
@@ -320,6 +321,7 @@ export default function Orders() {
           </div>
         </div>
       )}
+    </div>
     </div>
   );
 }

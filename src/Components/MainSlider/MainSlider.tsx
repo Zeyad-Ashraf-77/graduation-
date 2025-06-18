@@ -26,17 +26,26 @@ export default function MainSlider() {
   const images = [image1, image2, image3, image4, image5, image6, image7, image8, image9, image10, image11];
 
   useEffect(() => {
-    axios
-      .get("https://project1-kohl-iota.vercel.app/brand", {
-        headers: { Authorization: localStorage.getItem("authorization") || "" },
-      })
-      .then((res) => setBrands(res.data.brands))
-      .catch(() => setBrands([]))
-      .finally(() => setIsLoading(false));
+    try {
+      
+      if(localStorage.getItem("authorization")){
+      axios
+        .get("https://project1-kohl-iota.vercel.app/brand", {
+          headers: { Authorization: localStorage.getItem("authorization") || "" },
+        })
+        .then((res) => setBrands(res.data.brands))
+        .catch(() => setBrands([]))
+        .finally(() => setIsLoading(false));
+      }
+    } catch (error) {
+      console.error("Error fetching brands:", error);
+    }finally {
+      setIsLoading(false);
+    }
   }, []);
 
   const settings = {
-    dots: true,
+    dots: false,
     infinite: true,
     speed: 700,
     slidesToShow: 1,

@@ -1,162 +1,227 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import axios from "axios";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { toast, ToastContainer } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { FaSpinner } from "react-icons/fa";
 
 const OrderAndPaymentForm: React.FC = () => {
-  const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState("card");
-  const [code, setCode] = useState("");
-  const [orderId, setOrderId] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [message, setMessage] = useState("");
+  const [orderId, setOrderId] = React.useState<string | null>(null);
+  const [cartTotal, setCartTotal] = React.useState<number>(0);
+  const [isPaySubmitting, setIsPaySubmitting] = React.useState(false);
+  const navigate = useNavigate();
 
-  // handle order creation
-  const handleOrderSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setMessage("");
+  useEffect(() => {
+    const storedTotal = localStorage.getItem('cartTotal');
+    if (storedTotal) {
+      setCartTotal(parseInt(storedTotal, 10));
+    }
+  }, []);
 
-    try {
-      const { data } = await axios.post(
-        "https://project1-kohl-iota.vercel.app/order/create",
-        { phone, address, paymentMethod },
-        {
-          headers: {
-            Authorization: localStorage.getItem("authorization") || "",
-            "Content-Type": "application/json",
+  // Formik for Order
+  const formik = useFormik({
+    initialValues: {
+      phone: '',
+      address: '',
+      paymentMethod: 'card',
+    },
+    validationSchema: Yup.object({
+      phone: Yup.string().required('Phone is required'),
+      address: Yup.string().required('Address is required'),
+      paymentMethod: Yup.string().oneOf(['card', 'cash']).required(),
+    }),
+    onSubmit: async (values, { setSubmitting }) => {
+      try {
+        const { data } = await axios.post(
+          "https://project1-kohl-iota.vercel.app/order/create",
+          {
+            phone: values.phone,
+            address: values.address,
+            paymentMethod: values.paymentMethod,
           },
+          {
+            headers: {
+              Authorization: localStorage.getItem("authorization") || "",
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        setOrderId(data?.order?._id);
+        toast.success("Order created successfully!", {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
+      
+        if (values.paymentMethod === 'cash') {
+          navigate('/orders');
         }
-      );
+      } catch (error: any) {
+        toast.error("Error creating order!", {
+          position: "bottom-left",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
+      } finally {
+        setSubmitting(false);
+      }
+    },
+  });
 
-      setOrderId(data?.order?._id); // تأكد أن هذا هو المسار الصحيح للـ ID
-      setMessage("Order placed successfully!");
-    } catch (error: any) {
-      console.error("Order creation failed:", error);
-      setMessage("Failed to place order.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  // handle payment creation
-  const handlePaymentSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setMessage("");
-
-    if (!orderId) {
-      setMessage("Order ID is missing. Please create an order first.");
-      setIsSubmitting(false);
-      return;
-    }
-
-    try {
-      const { data } = await axios.post(
-        "https://project1-kohl-iota.vercel.app/order/create-payment",
-        { orderId, code },
-        {
-          headers: {
-            Authorization: localStorage.getItem("authorization") || "",
-            "Content-Type": "application/json",
+  // Formik for Payment
+  const payFormik = useFormik({
+    initialValues: {
+      code: '',
+    },
+    onSubmit: async (values, { setSubmitting }) => {
+      setIsPaySubmitting(true);
+      if (!orderId) {
+        toast.error("Order ID is missing. Please create an order first.");
+        setIsPaySubmitting(false);
+        setSubmitting(false);
+        return;
+      }
+      try {
+        const totalAmount = cartTotal || 0;
+        const { data } = await axios.post(
+          "https://project1-kohl-iota.vercel.app/order/create-payment",
+          {
+            orderId,
+            code: values.code,
+            amount: Math.round(totalAmount),
           },
-        }
-      );
-
-      setMessage("Payment created successfully!");
-      console.log(data.data.url);
-      window.location.href = data.data.url;
-    } catch (error: any) {
-      console.error("Payment creation failed:", error);
-      setMessage("Failed to create payment.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+          {
+            headers: {
+              Authorization: localStorage.getItem("authorization") || "",
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        toast.success("Order created successfully!", {
+          position: "bottom-left",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
+        setTimeout(() => {
+          window.location.href = data.data.url;
+        }, 1000);
+      } catch (error: any) {
+        toast.error("Error creating order!", {
+          position: "bottom-left",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
+      } finally {
+        setIsPaySubmitting(false);
+        setSubmitting(false);
+      }
+    },
+  });
 
   return (
-    <div className="max-w-md mx-auto mt-28 p-6 bg-white rounded-lg shadow-md">
+    <div className="h-screen dark:bg-gray-900   pt-28   " > 
+    <ToastContainer />  
+
+    <div className="max-w-md mx-auto  shadow-amber-500  mt-20 p-6 bg-white  rounded-lg shadow-xl">
       {!orderId ? (
         <>
-          <h2 className="text-xl font-semibold mb-4">Create New Order</h2>
-          <form onSubmit={handleOrderSubmit} className="space-y-4">
+          <h2 className=" font-semibold mb-4">Create New Order</h2>
+          <form onSubmit={formik.handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium">Phone</label>
               <input
                 type="text"
                 className="w-full mt-1 p-2 border rounded-md"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                {...formik.getFieldProps('phone')}
                 required
               />
+              {formik.touched.phone && formik.errors.phone && (
+                <div className="text-red-500 text-xs mt-1">{formik.errors.phone}</div>
+              )}
             </div>
-
             <div>
               <label className="block text-sm font-medium">Address</label>
               <input
                 type="text"
                 className="w-full mt-1 p-2 border rounded-md"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
+                {...formik.getFieldProps('address')}
                 required
               />
+              {formik.touched.address && formik.errors.address && (
+                <div className="text-red-500 text-xs mt-1">{formik.errors.address}</div>
+              )}
             </div>
-
             <div>
-              <label className="block text-sm font-medium">
-                Payment Method
-              </label>
+              <label className="block text-sm font-medium">Payment Method</label>
               <select
                 className="w-full mt-1 p-2 border rounded-md"
-                value={paymentMethod}
-                onChange={(e) => setPaymentMethod(e.target.value)}
+                {...formik.getFieldProps('paymentMethod')}
               >
                 <option value="card">Card</option>
                 <option value="cash">Cash</option>
               </select>
             </div>
-
             <button
               type="submit"
-              disabled={isSubmitting}
-              className="w-full bg-[#6B4E35] text-white py-2 rounded-md hover:bg-[#543e2a] transition"
-            >
-              {isSubmitting ? "Submitting..." : "Place Order"}
+              disabled={formik.isSubmitting}
+              className="w-full bg-[#6B4E35]  flex items-center justify-center text-white py-2 rounded-md hover:bg-[#543e2a] transition"
+              >
+                <span>
+                  {formik.isSubmitting ? <FaSpinner className="animate-spin" /> : "Place Order"}
+                </span>
             </button>
           </form>
         </>
       ) : (
         <>
-          <h2 className="text-xl font-semibold mb-4">Create Payment</h2>
-          <form onSubmit={handlePaymentSubmit} className="space-y-4">
+          <h2 className=" font-semibold mb-4">Create Payment</h2>
+          <form onSubmit={payFormik.handleSubmit} className="space-y-4">
             <input type="hidden" value={orderId} />
-
             <div>
-              <label className="block text-sm font-medium">
-                Code (Optional)
-              </label>
+              <label className="block text-sm font-medium">Code (Optional)</label>
               <input
                 type="text"
                 className="w-full mt-1 p-2 border rounded-md"
-                onChange={(e) => setCode(e.target.value)}
+                {...payFormik.getFieldProps('code')}
                 placeholder="Enter code if you have one"
-              />
+                />
             </div>
-
             <button
               type="submit"
-              disabled={isSubmitting}
-              className="w-full bg-[#6B4E35] text-white py-2 rounded-md hover:bg-[#543e2a] transition"
+              disabled={isPaySubmitting || payFormik.isSubmitting}
+              className="w-full bg-[#6B4E35] flex justify-center items-center text-center mx-auto text-white py-2 rounded-md hover:bg-[#543e2a] transition"
             >
-              {isSubmitting ? "Submitting..." : "Create Payment"}
+              <span  >
+
+              {(isPaySubmitting || payFormik.isSubmitting) ? <FaSpinner className="animate-spin" /> : "Create Payment"}
+              </span>
             </button>
           </form>
         </>
       )}
-
-      {message && (
-        <p className="text-sm text-center mt-4 text-gray-700">{message}</p>
-      )}
     </div>
+              </div>
   );
 };
 

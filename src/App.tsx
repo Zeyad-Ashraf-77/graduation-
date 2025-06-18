@@ -27,6 +27,9 @@ import UpdateProduct from './Components/UpdateProduct/UpdateProduct'
 import AllOrders from './Components/AllOrders/AllOrders'
 import NotFound from './Components/NotFound/NotFound'
 import UpdatePassword from './Components/UpdatePassword/UpdatePassword'
+import Coupon from './Components/Coupon/Coupon'
+import ProtectedRoute from './Components/ProtectedRoute/ProtectedRoute'
+import BrandDetails from './Components/BrandDetails/BrandDetails'
 function App() {
   const router = createBrowserRouter([
     {
@@ -48,75 +51,83 @@ function App() {
       
         {
           path: "/category",
-          element: <Category />,
+          element: <ProtectedRoute><Category /></ProtectedRoute>,
         },
         {
           path: "/Subcategory/:id",
-          element: <SubCategory />,
+          element: <ProtectedRoute><SubCategory /></ProtectedRoute>,
         },{
           path:"product",
-          element: <ProductListPage />,
+          element: <ProtectedRoute><ProductListPage /></ProtectedRoute>,
         },{
           path:"/brand",
-          element:<Brands/>
+          element:<ProtectedRoute><Brands/></ProtectedRoute>,
         },{
           path:"/cart",
-          element:<Cart/>
+          element:<ProtectedRoute><Cart/></ProtectedRoute>
         },{
           path:"/profile",
-          element:<Profile/>
+          element:<ProtectedRoute><Profile/></ProtectedRoute>
         },{
           path:"/addProduct",
-          element:<AddProduct/>
+          element:<ProtectedRoute><AddProduct/></ProtectedRoute>
         },{
           path:"wishlist",
-          element:<Wishlist/>
+          element:<ProtectedRoute><Wishlist/></ProtectedRoute>
         },{
           path:"/productDetails/:id",
-          element:<ProductDetails/>
+          element: <ProtectedRoute><ProductDetails/></ProtectedRoute>
         },{
           path:"forgetPassword",
-          element:<ForgetPassword/>
+          element:  <ForgetPassword/>
         },{
           path:"resetPassword",
           element:<ResetPassword/>
         },{
+          path:"brandDetails/:id",
+          element:<ProtectedRoute><BrandDetails/></ProtectedRoute>,
+        },{
           path:"orders",
-          element:<Orders/>
+          element:<ProtectedRoute><Orders/></ProtectedRoute>
         },
         {
           path:"orderForm",
-          element:<OrderForm/>
+          element:<ProtectedRoute><OrderForm/></ProtectedRoute>
         },
+      
         {
           path:"updateProduct/:id",
-          element:<UpdateProduct/>
+          element:<ProtectedRoute><UpdateProduct/></ProtectedRoute>
         },
         {
           path:"allOrder",
-          element:<AllOrders/>
+          element:<ProtectedRoute><AllOrders/></ProtectedRoute>
         },{
           path:"*",
           element:<NotFound/>
         },{
           path:"updatePassword",
-          element:<UpdatePassword/>
+          element:<ProtectedRoute><UpdatePassword/></ProtectedRoute>
         },
         {
           path:"/layoutAdmin",
           element: <LayOutAdmin />,children: [
             {
               index: true,
-              element: <DashBoard />,
+              element:<ProtectedRoute><DashBoard /></ProtectedRoute>,
             },{
               path: "createCategory",
-              element: <CreateCategory />, 
+              element: <ProtectedRoute><CreateCategory /></ProtectedRoute>, 
             },{
               path:"createBrand",
-              element: <CreateBrand />,
+              element: <ProtectedRoute><CreateBrand /></ProtectedRoute>,
             },{
               path:"createSubCategory",
-              element:<CreateSubCategory/>
+              element:<ProtectedRoute><CreateSubCategory/></ProtectedRoute>
+            },
+            {
+              path:"coupon",
+              element:<ProtectedRoute><Coupon/></ProtectedRoute>
             },
             {
         }

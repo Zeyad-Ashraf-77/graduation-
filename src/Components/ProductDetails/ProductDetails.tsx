@@ -1,17 +1,30 @@
+
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { FaStar } from "react-icons/fa";
+import { FaCartArrowDown, FaHeart, FaSpinner, FaStar } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
 import { ProductDetailsProps } from "../Interfaces/Interfaces";
+import { motion } from "framer-motion";
+
+const fadeUpVariant = {
+  hidden: { opacity: 0, y: 50 },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    transition: { duration: 0.6, ease: "easeOut" } 
+  },
+};
 
 const ProductDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [product, setProduct] = useState<ProductDetailsProps | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingButton, setIsLoadingButton] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   async function addToWishlist(productId: string) {
     try {
+      setIsLoadingButton(true);
       const { data } = await axios.patch(
         `https://project1-kohl-iota.vercel.app/product/washlist/${productId}`,
         {},
@@ -28,9 +41,13 @@ const ProductDetails: React.FC = () => {
       console.log("Error adding to wishlist:", error);
       toast.error("Error adding product to wishlist!");
     }
+    finally{
+      setIsLoadingButton(false);
+    }
   }
   async function addToCart(productId: string) {
     try {
+      setIsLoadingButton(true);
       const { data } = await axios.post(
         `https://project1-kohl-iota.vercel.app/cart/create`,
         {
@@ -45,19 +62,42 @@ const ProductDetails: React.FC = () => {
         }
       );
       console.log(data);
-      toast.success("Product added to cart successfully!");
+      toast.success("Product added to cart successfully!", {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
     } catch (error) {
-      console.log("Error adding to cart:");
       if (axios.isAxiosError(error) && error.response?.data?.message) {
-        toast.error(error.response.data.message);
+      
+        toast.error(error.response.data.message, {
+          position: "bottom-left",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        }); 
+
       } else {
         toast.error("An error occurred");
       }
+    }
+    finally{
+      setIsLoadingButton(false);
     }
   }
   useEffect(() => {
     const fetchProduct = async () => {
       try {
+        setIsLoading(true);
         const { data } = await axios.get(
           `https://project1-kohl-iota.vercel.app/product/${id}`,
           { headers: { Authorization: localStorage.getItem("authorization") } }
@@ -76,8 +116,8 @@ const ProductDetails: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="loader"></div>
+      <div className="h-screen light:bg-amber-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="w-16 h-16 border-4 border-yellow-600 border-dashed rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -91,9 +131,23 @@ const ProductDetails: React.FC = () => {
   }
 
   return (
-    <div className="max-w-7xl mt-32 mx-auto px-4 py-10 grid grid-cols-1 lg:grid-cols-2 gap-10">
-      <div>
-        {/* Left Side - Product Images */} <ToastContainer />
+    <>
+    <h1 className=" mt-28  font-bold text-center">Product Details</h1>
+    <motion.div
+    className="max-w-7xl  mx-auto px-4 py-10 grid grid-cols-1 lg:grid-cols-2 gap-10"
+      initial="hidden"
+      animate="visible"
+      variants={{
+        visible: {
+          transition: {
+            staggerChildren: 0.2
+          }
+        }
+      }}
+    >
+      {/* Left Side - Product Images */}
+      <motion.div variants={fadeUpVariant}>
+        <ToastContainer />
         <div className="w-full h-[350px] sm:h-[400px] rounded-lg overflow-hidden">
           <img
             src={product.imageCover.secure_url}
@@ -103,20 +157,21 @@ const ProductDetails: React.FC = () => {
         </div>
         <div className="flex gap-3 mt-4 overflow-x-auto">
           {product.images.map((img, i) => (
-            <img
+            <motion.img
               key={i}
               src={img.secure_url}
               alt={`Thumbnail ${i + 1}`}
               className="w-20 h-20 object-cover border rounded-md cursor-pointer hover:ring-2 hover:ring-[#6B4E35]"
+              variants={fadeUpVariant}
             />
           ))}
         </div>
-      </div>
+      </motion.div>
 
       {/* Right Side - Product Details */}
-      <div className="space-y-4 text-gray-800">
+      <motion.div className="space-y-4 text-gray-800" variants={fadeUpVariant}>
         <h2 className="text-3xl font-bold">{product.name}</h2>
-        <p className="text-gray-600">{product.describtion}</p>
+        <p className="text-gray-600">{product?.describtion}</p>
 
         <p className="text-2xl font-semibold text-red-700 line-through ">
           ${product.price.toFixed(2)} No Discount
@@ -138,22 +193,24 @@ const ProductDetails: React.FC = () => {
           </span>
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-4 mt-4">
+        <motion.div className="flex flex-col sm:flex-row gap-4 mt-4" variants={fadeUpVariant}>
           <button
+          disabled={isLoadingButton}
             onClick={() => addToCart(product._id)}
-            className="bg-[#6B4E35] hover:bg-[#543e2a] transition text-white px-6 py-2 rounded-md font-medium"
+            className="bg-[#6B4E35] hover:bg-[#543e2a] flex items-center justify-center transition text-white px-6 py-2 rounded-md font-medium"
           >
-            Add to Cart
+          {isLoadingButton ? <FaSpinner className="animate-spin" /> :<span className="flex items-center gap-1" > Add to Cart <FaCartArrowDown /> </span>}
           </button>
           <button
+          disabled={isLoadingButton}
             onClick={() => addToWishlist(product._id)}
-            className="border border-gray-400 hover:bg-gray-100 transition px-6 py-2 rounded-md font-medium text-gray-800"
+            className="border border-gray-400 hover:bg-gray-100 flex items-center justify-center transition px-6 py-2 rounded-md font-medium text-gray-800"
           >
-            Add to Wishlist
+          {isLoadingButton ? <FaSpinner className="animate-spin"/> :<span className="flex items-center gap-1" > Add to Wishlist <FaHeart /> </span> }
           </button>
-        </div>
+        </motion.div>
 
-        <div className="text-sm mt-6 space-y-1 text-gray-700">
+        <motion.div className="text-sm mt-6 space-y-1 text-gray-700" variants={fadeUpVariant}>
           <p className="flex items-center gap-1 ">
             <span className="font-medium ">Rate:</span>{" "}
             {product.avgRating || "N/A"} <FaStar className="text-amber-400" />
@@ -169,9 +226,10 @@ const ProductDetails: React.FC = () => {
           <p>
             <span className="font-medium">Handmade:</span> Yes
           </p>
-        </div>
-      </div>
-    </div>
+        </motion.div>
+      </motion.div>
+    </motion.div>
+    </>
   );
 };
 

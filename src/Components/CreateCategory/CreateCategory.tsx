@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import image from '../../assets/images/download (11).jpeg'
 
@@ -27,8 +26,10 @@ const validationSchema = Yup.object({
   image: Yup.mixed().required("Category image is required"),
 });
 
+import { useRef } from "react";
+
 export default function CreateCategory() {
-  const navigate = useNavigate();
+  const formSectionRef = useRef<HTMLDivElement>(null);
   const [categories, setCategories] = useState([]);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
@@ -42,7 +43,7 @@ async function getCategories(){
         Authorization: localStorage.getItem("authorization") || "",
       },
     });
-    console.log('First category object:', data.categories); // Debug: print first category
+    console.log('First category object:', data.categories); 
     setCategories(data.categories);
   } catch (error) {
     console.error("Error fetching categories:", error);
@@ -61,9 +62,31 @@ async function getCategories(){
           },
         }
       );
-      getCategories(); // Refresh category list after deletion
+      toast.success("Category deleted successfully!", {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+      setTimeout(() => {
+        getCategories(); 
+      }, 1000);
     } catch (error) {
       console.error("Error deleting category:", error);
+      toast.error("Error deleting category!", {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -91,13 +114,37 @@ async function getCategories(){
           },
         }
       );
+      toast.success("Category updated successfully!", {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
       console.log("Category updated:", response.data);
       await getCategories();
       setEditingCategory(null);
       setErrorMessage("");
       alert("Category updated successfully!");
+      // Smooth scroll to form section
+      if (formSectionRef.current) {
+        formSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     } catch (error: any) {
       console.error("Error updating category:", error);
+      toast.error("Error updating category!", {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
       if (error.response) {
         setErrorMessage(
           error.response.data.message || "Error updating category. Please try again."
@@ -133,19 +180,28 @@ async function getCategories(){
         }
       );
       console.log("Category created response:", response.data);
+      toast.success("Category created successfully!", {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
 
-      // استدعاء الفنكشن لجلب الكاتيجوريز بعد الإنشاء
-      await getCategories();
+    setTimeout(() => {
+      getCategories();
+    }, 1000);
 
-      // إعادة تعيين القيم
       values.name = "";
       values.image = null;
       setErrorMessage("");
 
-      // إظهار إشعار النجاح باستخدام التوستر
       toast.success("Category created successfully!", {
-        position: "bottom-right", // يظهر في أسفل اليمين
-        autoClose: 3000, // يغلق الإشعار تلقائيًا بعد 3 ثوانٍ
+        position: "bottom-right",
+        autoClose: 3000, 
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -156,7 +212,6 @@ async function getCategories(){
     } catch (error: any) {
       console.error("Error creating category:", error);
 
-      // التعامل مع الأخطاء
       if (error.response) {
         setErrorMessage(
           error.response.data.message || "Error creating category. Please try again."
@@ -169,7 +224,6 @@ async function getCategories(){
         setErrorMessage("Error setting up the request. Please try again.");
       }
 
-      // إظهار إشعار الخطأ باستخدام التوستر
       toast.error(
         "Error creating category. Please try again.",
         {
@@ -194,16 +248,17 @@ async function getCategories(){
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="loader"></div>
-      </div>
+      <div className="h-screen bg-amber-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="w-16 h-16 border-4 border-yellow-600 border-dashed rounded-full animate-spin"></div>
+    </div>
     );
   }
   return (
-    <div className="min-h-screen mt-16 bg-[#efebd9] py-8">
-      {/* Create/Update Category Form */}
+<div className="min-h-screen  dark:bg-transparent  mt-16 py-8">
+     <ToastContainer />
+
       <div className="max-w-4xl mx-auto px-4">
-        <div className="bg-[#efebd9] shadow-xl shadow-amber-400 rounded-2xl p-8 mb-12">
+        <div ref={formSectionRef} className="bg-[#efebd9] shadow-xl shadow-amber-400 rounded-2xl p-8 mb-12">
           <h2 className="font-bold mb-6 text-[#4e342e] text-center">
             {editingCategory ? "Update Category" : "Create New Category"}
           </h2>
@@ -310,8 +365,8 @@ async function getCategories(){
         </div>
 
         {/* All Categories Section */}
-        <div className="bg-[#efebd9] shadow-amber-300 shadow-xl rounded-2xl p-8">
-          <h2 className="text-3xl font-bold mb-8 text-[#4e342e] text-center">
+        <div className=" dark:bg-transparent light:bg-white  shadow-amber-300 shadow-xl rounded-2xl p-8">
+          <h2 className="text-3xl font-bold mb-8 dark:text-amber-500 text-center">
             All Categories
           </h2>
 

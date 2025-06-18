@@ -105,6 +105,13 @@ export default function CreateBrand() {
         );
         toast.success("Brand updated successfully!", {
           position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
         });
       } else {
         // Create
@@ -118,7 +125,16 @@ export default function CreateBrand() {
             },
           }
         );
-        toast.success("Brand created successfully!");
+        toast.success("Brand created successfully!", {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
       }
       setErrorMessage("");
       fetchBrands();
@@ -131,7 +147,17 @@ export default function CreateBrand() {
       );
       toast.error(
         error.response?.data?.message ||
-          "Error creating/updating brand. Please try again."
+          "Error creating/updating brand. Please try again.",
+          {
+            position: "bottom-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+          }
       );
     } finally {
       setIsLoading(false);
@@ -140,14 +166,14 @@ export default function CreateBrand() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="loader"></div>
-      </div>
+      <div className="h-screen bg-amber-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="w-16 h-16 border-4 border-yellow-600 border-dashed rounded-full animate-spin"></div>
+    </div>
     );
   }
 
   return (
-    <div className="min-h-screen mt-16 bg-[#efebd9] py-8">
+    <div className="min-h-screen mt-16 py-8">
       <ToastContainer />
       <div className="max-w-4xl mx-auto px-4">
         <div className="bg-[#efebd9] shadow-xl shadow-amber-400 rounded-2xl p-8 mb-12">
@@ -303,22 +329,28 @@ export default function CreateBrand() {
                   <h5 className="text-xl font-bold text-[#4e342e] mb-4">
                     {brand.name.toUpperCase()}
                   </h5>
-                  <div className="space-y-3">
-                    <button
-                      type="button"
-                      onClick={() => deleteBrand(brand._id)}
-                      className="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg font-medium transition duration-300"
-                    >
-                      Delete
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setEditingBrand(brand)}
-                      className="w-full bg-[#4e342e] hover:bg-[#6d4c41] text-white py-2 px-4 rounded-lg font-medium transition duration-300"
-                    >
-                      Update
-                    </button>
-                  </div>
+                  {localStorage.getItem('id')===brand.userId ? (
+                      <div className="space-y-3">
+                      <button
+                        type="button"
+                        onClick={() => deleteBrand(brand._id)}
+                        className="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg font-medium transition duration-300"
+                      >
+                        Delete
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setEditingBrand(brand)}
+                        className="w-full bg-[#4e342e] hover:bg-[#6d4c41] text-white py-2 px-4 rounded-lg font-medium transition duration-300"
+                      >
+                        Update
+                      </button>
+                    </div>
+                  ):<div>
+                    <p className="text-red-500 text-center p-2 bg-red-100 rounded-2xl ">You are not authorized to delete this brand</p>
+                  </div> }
+                  
+                
                 </div>
               </div>
             ))}

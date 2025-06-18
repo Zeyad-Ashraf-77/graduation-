@@ -1,5 +1,4 @@
-
-import  { useState } from "react";
+import { useState } from "react";
 import { useFormik } from "formik";
 import axios from "axios";
 import { FormValues, RegisterRole } from "../Interfaces/Interfaces";
@@ -19,34 +18,35 @@ export default function Register() {
     try {
       setLoading(true);
       setToConfirm(false);
-      
+
       // Create FormData to handle file upload
       const formData = new FormData();
-      
+
       // Add all text form values to FormData
       Object.keys(values).forEach((key) => {
-        if (key !== 'file') { // Skip file as we'll handle it separately
+        if (key !== "file") {
+          // Skip file as we'll handle it separately
           formData.append(key, values[key as keyof FormValues]);
         }
       });
-      
+
       // Add image from state (required)
       if (selectedImage) {
-        formData.append('file', selectedImage);
+        formData.append("file", selectedImage);
       } else {
         setApiError("Profile image is required");
         toast.error("Profile image is required");
         setLoading(false);
         return;
       }
-      
+
       const { data } = await axios.post(
         `https://project1-kohl-iota.vercel.app/users/signup/${role}`,
         formData,
         {
           headers: {
-            'Content-Type': 'multipart/form-data'
-          }
+            "Content-Type": "multipart/form-data",
+          },
         }
       );
       console.log(data);
@@ -65,7 +65,7 @@ export default function Register() {
         setApiError("An error occurred");
         toast.error("An error occurred");
       }
-    }finally{
+    } finally {
       setLoading(false);
     }
   }
@@ -109,13 +109,13 @@ export default function Register() {
   });
 
   return (
-    <>
-    <ToastContainer />
+    <div className="  dark:bg-gray-900  py-24">
+      <ToastContainer />
       {toConfirm ? (
         <ConfirmForm email={formik.values.email} />
       ) : (
-        <div className="min-h-screen mt-28 flex items-center justify-center  px-4">
-          <div className="bg-white p-8 md:p-12 rounded-[32px] shadow-xl w-full max-w-lg">
+        <div className="min-h-screen flex items-center justify-center  px-4">
+          <div className="bg-gray-300 dark:bg-gray-200 p-8 md:p-12 rounded-[32px] shadow-xl w-full max-w-lg">
             <h2 className="text-3xl font-bold text-center text-amber-700 mb-8">
               Register Now
             </h2>
@@ -327,11 +327,11 @@ export default function Register() {
                   onChange={(e) => {
                     const file = e.target.files?.[0] || null;
                     setSelectedImage(file);
-                    
+
                     // Update formik value for validation
                     if (file) {
-                      formik.setFieldValue('file', file);
-                      
+                      formik.setFieldValue("file", file);
+
                       // Create preview URL for the selected image
                       const reader = new FileReader();
                       reader.onloadend = () => {
@@ -339,18 +339,18 @@ export default function Register() {
                       };
                       reader.readAsDataURL(file);
                     } else {
-                      formik.setFieldValue('file', undefined);
+                      formik.setFieldValue("file", undefined);
                       setPreviewImage(null);
                     }
                   }}
                 />
-                
+
                 {/* Image Preview */}
                 {previewImage && (
                   <div className="mt-2">
-                    <img 
-                      src={previewImage} 
-                      alt="Profile Preview" 
+                    <img
+                      src={previewImage}
+                      alt="Profile Preview"
                       className="w-24 h-24 object-cover rounded-full border-2 border-amber-500"
                     />
                   </div>
@@ -374,7 +374,11 @@ export default function Register() {
                   }
                   className="w-1/2 bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2 rounded-md"
                 >
-                  {loading ? <FaSpinner className="animate-spin mx-auto" /> : "Register as User"}
+                  {loading ? (
+                    <FaSpinner className="animate-spin mx-auto" />
+                  ) : (
+                    "Register as User"
+                  )}
                 </button>
 
                 <button
@@ -387,13 +391,17 @@ export default function Register() {
                   }
                   className="w-1/2 bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2 rounded-md"
                 >
-                  {loading ? <FaSpinner className="animate-spin mx-auto" /> : "Register as Crafter"}
+                  {loading ? (
+                    <FaSpinner className="animate-spin mx-auto" />
+                  ) : (
+                    "Register as Crafter"
+                  )}
                 </button>
               </div>
             </form>
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }

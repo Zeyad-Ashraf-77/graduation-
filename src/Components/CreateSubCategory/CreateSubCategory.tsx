@@ -4,6 +4,7 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { FaSpinner } from "react-icons/fa";
 
 interface Category {
   _id: string;
@@ -32,190 +33,209 @@ const validationSchema = Yup.object({
 export default function CreateSubCategory() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
-  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [selectedSubCategory, setSelectedSubCategory] = useState<SubCategory | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
 
-  // Fetch categories
+  const authHeader = { Authorization: localStorage.getItem("authorization") || "" };
+
   useEffect(() => {
     axios
-      .get("https://project1-kohl-iota.vercel.app/category", {
-        headers: { Authorization: localStorage.getItem("authorization") || "" },
-      })
+      .get("https://project1-kohl-iota.vercel.app/category", { headers: authHeader })
       .then((res) => setCategories(res.data.categories))
-      .catch(() => setErrorMessage("Error fetching categories"));
+      .catch(() => toast.error("Error fetching categories"));
   }, []);
 
-  // Fetch subcategories
-  const fetchSubCategories = (categoryId: string) => {
+  const fetchSubCategories = (categoryName: string) => {
+    const selectedCat = categories.find((cat) => cat.name === categoryName);
+    if (!selectedCat) return;
+
     axios
-      .get(`https://project1-kohl-iota.vercel.app/sub-category/${categoryId}`, {
-        headers: { Authorization: localStorage.getItem("authorization") || "" },
-      })
+      .get(`https://project1-kohl-iota.vercel.app/sub-category/${selectedCat._id}`, { headers: authHeader })
       .then((res) => setSubCategories(res.data.subCategories || []))
-      .catch((error) => {
-        console.log(error);
-        setErrorMessage("Error fetching subcategories");
-      });
+      .catch(() => toast.error("Error fetching subcategories"));
   };
 
-  // Handle form submit
   const handleSubmit = async (values: FormValues, { resetForm }: any) => {
     const formData = new FormData();
     formData.append("name", values.name);
-    formData.append("category", values.category); // اسم الكاتيجوري
-    formData.append("file", values.image!);
+    formData.append("category", values.category); // <-- اسم الكاتيجوري
+    if (values.image) formData.append("file", values.image);
 
     try {
       setIsLoading(true);
-      const { data } = await axios.post(
-        "https://project1-kohl-iota.vercel.app/sub-category/create",
-        formData,
-        {
-          headers: {
-            Authorization: localStorage.getItem("authorization") || "",
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      console.log(data);
+      if (selectedSubCategory) {
+        await axios.patch(
+          `https://project1-kohl-iota.vercel.app/sub-category/update/${selectedSubCategory._id}`,
+          formData,
+          { headers: { ...authHeader, "Content-Type": "multipart/form-data" } }
+        );
+        toast.success("SubCategory updated successfully");
+      } else {
+        await axios.post(
+          "https://project1-kohl-iota.vercel.app/sub-category/create",
+          formData,
+          { headers: { ...authHeader, "Content-Type": "multipart/form-data" } }
+        );
+        toast.success("SubCategory created successfully");
+      }
 
-      // إظهار إشعار النجاح باستخدام التوستر في أسفل اليمين
-      toast.success("SubCategory created successfully!", {
-        position: "bottom-right", // تعديل الموقع إلى أسفل اليمين
-        autoClose: 3000, // يغلق الإشعار تلقائيًا بعد 3 ثوانٍ
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-      });
-
-      setErrorMessage("");
-      fetchSubCategories(values.category); // استدعاء الفنكشن مع id الكاتيجوري
       resetForm();
+      setSelectedSubCategory(null);
+      fetchSubCategories(values.category);
     } catch (error: any) {
-      setErrorMessage(
-        error.response?.data?.message || "Error creating subcategory. Please try again."
-      );
-
-      // إظهار إشعار الخطأ باستخدام التوستر في أسفل اليمين
-      toast.error(
-        error.response?.data?.message || "Error creating subcategory. Please try again.",
-        {
-          position: "bottom-right", // تعديل الموقع إلى أسفل اليمين
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        }
-      );
+      toast.error(error.response?.data?.message || "Error occurred");
     } finally {
       setIsLoading(false);
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="loader"></div>
-      </div>
-    );
-  }
+  const handleDelete = async (id: string) => {
+    try {
+      setDeletingId(id);
+      await axios.delete(`https://project1-kohl-iota.vercel.app/sub-category/delete/${id}`, {
+        headers: authHeader,
+      });
+      toast.success("SubCategory deleted");
+      fetchSubCategories(selectedCategory);
+    } catch (error: any) {
+      toast.error("Failed to delete subcategory");
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   return (
-    <div className="min-h-screen mt-16 bg-[#efebd9] py-8">
-      <ToastContainer
-        position="bottom-right" // تحديد الموقع في أسفل اليمين
-        autoClose={3000} // يغلق الإشعار تلقائيًا بعد 3 ثوانٍ
-        hideProgressBar={false} // إظهار شريط التقدم
-        newestOnTop={false} // الإشعارات الأحدث ليست في الأعلى
-        closeOnClick // يغلق الإشعار عند النقر عليه
-        rtl={false} // اتجاه النص من اليسار إلى اليمين
-        pauseOnFocusLoss // إيقاف الإشعار عند فقدان التركيز
-        draggable // السماح بسحب الإشعار
-        pauseOnHover // إيقاف العد التنازلي عند تمرير الماوس
-        theme="colored" // استخدام الثيم الملون
-      />
+    <div className="min-h-screen mt-16 py-8">
+      <ToastContainer position="bottom-right" theme="colored" />
+
       <div className="max-w-4xl mx-auto px-4">
         <div className="bg-[#efebd9] shadow-xl shadow-amber-400 rounded-2xl p-8 mb-12">
-          <h2 className="font-bold mb-6 text-[#4e342e] text-center">Create New SubCategory</h2>
-          {errorMessage && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">{errorMessage}</div>}
+          <h2 className="font-bold mb-6 text-[#4e342e] text-center">Create or Update SubCategory</h2>
 
           <Formik
-            initialValues={{ name: "", image: null, category: "" }}
+            initialValues={{
+              name: selectedSubCategory?.name || "",
+              image: null,
+              category: selectedSubCategory?.category || "",
+            }}
+            enableReinitialize
             validationSchema={validationSchema}
             onSubmit={handleSubmit}
           >
             {({ setFieldValue, values }) => (
               <Form className="space-y-6">
                 <div>
-                  <label htmlFor="name" className="block text-lg font-semibold text-[#4e342e] mb-2">
-                    SubCategory Name
-                  </label>
+                  <label className="block mb-2 text-[#4e342e] font-semibold">SubCategory Name</label>
                   <Field
-                    type="text"
-                    id="name"
                     name="name"
-                    className="w-full border-2 border-[#4e342e] rounded-lg p-3 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
-                    placeholder="Enter subcategory name"
+                    className="w-full p-3 border-2 rounded-lg border-[#4e342e]"
+                    placeholder="Enter name"
                   />
-                  <ErrorMessage name="name" component="div" className="text-red-500 text-sm mt-1" />
+                  <ErrorMessage name="name" component="div" className="text-red-500 text-sm" />
                 </div>
 
                 <div>
-                  <label className="block text-lg font-semibold text-[#4e342e] mb-2">Category</label>
+                  <label className="block mb-2 text-[#4e342e] font-semibold">Category</label>
                   <Field
                     as="select"
                     name="category"
-                    className="w-full border-2 border-[#4e342e] rounded-lg p-3 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
+                    className="w-full p-3 border-2 rounded-lg border-[#4e342e]"
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                      const value = e.target.value;
+                      setFieldValue("category", value);
+                      setSelectedCategory(value);
+                      fetchSubCategories(value);
+                    }}
                   >
                     <option value="">Select a category</option>
                     {categories.map((cat) => (
-                      <option key={cat._id}>
+                      <option key={cat._id} value={cat.name}>
                         {cat.name}
                       </option>
                     ))}
                   </Field>
-                  <ErrorMessage name="category" component="div" className="text-red-500 text-sm mt-1" />
+                  <ErrorMessage name="category" component="div" className="text-red-500 text-sm" />
                 </div>
 
                 <div>
-                  <label className="block text-lg font-semibold text-[#4e342e] mb-2">SubCategory Image</label>
+                  <label className="block mb-2 text-[#4e342e] font-semibold">Image</label>
                   <input
                     type="file"
                     accept="image/*"
-                    className="block w-full text-sm text-[#4e342e] border-2 border-[#4e342e] rounded-lg p-3 file:mr-4 file:py-2 file:px-6 file:rounded-lg file:border-0 file:bg-[#4e342e] file:text-white hover:file:bg-[#6d4c41] transition"
                     onChange={(event) => {
                       const file = event.currentTarget.files![0];
                       setFieldValue("image", file);
                     }}
+                    className="w-full border-2 p-3 rounded-lg border-[#4e342e]"
                   />
                   <ErrorMessage name="image" component="div" className="text-red-500 text-sm mt-1" />
-                  <div className="mt-4 h-48 bg-white rounded-lg flex items-center justify-center border-2 border-dashed border-[#4e342e]">
-                    {values.image ? (
-                      <div className="text-center">
-                        <p className="text-[#4e342e]">Selected: {(values.image as File).name}</p>
-                      </div>
-                    ) : (
-                      <p className="text-[#4e342e]">Image preview will appear here</p>
-                    )}
-                  </div>
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full bg-[#4e342e] hover:bg-[#6d4c41] text-white py-3 px-6 rounded-lg text-lg font-semibold transition duration-300 transform hover:scale-[1.02]"
+                  disabled={isLoading}
+                  className="w-full bg-[#4e342e] hover:bg-[#6d4c41] text-white py-3 rounded-lg font-semibold flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                 >
-                  Create SubCategory
+                  {isLoading ? (
+                    <>
+                      <FaSpinner className="animate-spin" />
+                      {selectedSubCategory ? "Updating..." : "Creating..."}
+                    </>
+                  ) : selectedSubCategory ? (
+                    "Update SubCategory"
+                  ) : (
+                    "Create SubCategory"
+                  )}
                 </button>
               </Form>
             )}
           </Formik>
         </div>
+
+        {subCategories.length > 0 && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {subCategories.map((sub) => (
+              <div
+                key={sub._id}
+                className="border-2 border-[#4e342e] rounded-xl p-4 shadow-md bg-white text-[#4e342e]"
+              >
+                <img src={sub.image?.secure_url} alt={sub.name} className="w-full h-40 object-cover rounded-md mb-4" />
+                <h3 className="text-lg font-semibold mb-2">{sub.name}</h3>
+                <p className="mb-3">Category: {sub.category}</p>
+                <div className="flex gap-2">
+                  <button
+                    className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600 flex items-center gap-1 min-w-[80px] justify-center"
+                    onClick={() => {
+                      setUpdatingId(sub._id);
+                      setSelectedSubCategory(sub);
+                    }}
+                    disabled={updatingId === sub._id}
+                  >
+                    {updatingId === sub._id ? (
+                      <FaSpinner className="animate-spin" />
+                    ) : (
+                      "Update"
+                    )}
+                  </button>
+                  <button
+                    className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600 flex items-center gap-1 min-w-[80px] justify-center"
+                    onClick={() => handleDelete(sub._id)}
+                    disabled={deletingId === sub._id}
+                  >
+                    {deletingId === sub._id ? (
+                      <FaSpinner className="animate-spin" />
+                    ) : (
+                      "Delete"
+                    )}
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

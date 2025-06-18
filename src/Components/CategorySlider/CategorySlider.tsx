@@ -3,7 +3,8 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import axios from "axios";
-
+import { toast } from "react-toastify";
+import image1 from '../../assets/images/slider 1.jpeg';
 export default function Categories() {
   const [images, setImages] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -15,15 +16,26 @@ export default function Categories() {
         { headers: { Authorization: localStorage.getItem("authorization") } }
       );
       setImages(data.brands);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching brand:", error);
+      if (error.response) {
+        if (error.response.status === 401) {
+          localStorage.removeItem("authorization");
+          localStorage.removeItem("role");
+          window.location.href = "/login";
+        } else if (error.response.status >= 500) {
+          toast.error("Server error. Please try again later.");
+        }
+      }
     } finally {
       setIsLoading(false);
     }
   }
 
   useEffect(() => {
-    getBrand();
+    if(localStorage.getItem("authorization")){
+      getBrand();
+    }
   }, []);
 
   const settings = {
@@ -45,7 +57,7 @@ export default function Categories() {
 
   if (isLoading) {
     return (
-      <div className="py-5 transition-colors duration-500 bg-white dark:bg-gray-900 px-4">
+      <div className="py-5 transition-colors duration-500 light:bg-white dark:bg-black px-4">
         <div className="container mx-auto">
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {Array.from({ length: 4 }).map((_, index) => (
@@ -62,7 +74,7 @@ export default function Categories() {
 
   return (
     <>
-      <div className="py-5 transition-colors duration-500 bg-white dark:bg-gray-900 px-4">
+      <div className="py-5 transition-colors duration-500 light:bg-white dark:bg-black px-4">
             
             <h2 className="font-bold text-center mb-10 dark:text-amber-500">
               All Brands
@@ -73,7 +85,7 @@ export default function Categories() {
               <div key={img._id} className="px-2">
                 <div className="relative w-full aspect-[3/2] overflow-hidden rounded-2xl shadow-lg group transition-all duration-300 hover:shadow-2xl">
                   <img
-                    src={img.image?.secure_url}
+                    src={img.image?.secure_url?   img.image?.secure_url : image1 }
                     alt={img.name}
                     className="absolute inset-0 w-full h-full object-cover transform transition-transform duration-300 group-hover:scale-105"
                   />

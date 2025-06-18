@@ -1,11 +1,13 @@
+
 import { useEffect, useState } from "react";
 import axios from "axios";
 import type { CategoryType } from "../Interfaces/Interfaces";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion"; // ✅ استيراد Framer Motion
 
 export default function Category() {
   const [category, setCategory] = useState<CategoryType[]>([]);
-  const [isLoading, setIsLoading] = useState(true); // حالة اللودينج
+  const [isLoading, setIsLoading] = useState(true);
 
   async function getCategory() {
     try {
@@ -17,7 +19,7 @@ export default function Category() {
     } catch (error) {
       console.error("Error fetching categories:", error);
     } finally {
-      setIsLoading(false); // إيقاف اللودينج بعد جلب البيانات
+      setIsLoading(false);
     }
   }
 
@@ -28,23 +30,25 @@ export default function Category() {
   return (
     <>
       {/* Hero Section */}
-      <div className="py-32 bg-[url('../assets/images/pin/slider4 (4).jpeg')] hero bg-cover bg-center bg-slate-900 text-white text-center dark:bg-gray-900">
-        <h1 className="    font-bold dark:text-amber-500">Cadiz Collection</h1>
+      <div className="py-32 bg-[url('../assets/images/pin/slider4 (4).jpeg')] hero bg-cover bg-center bg-slate-900 text-white text-center dark:bg-black">
+        <h1 className="font-bold dark:text-amber-500">Cadiz Collection</h1>
         <p className="mt-2 text-lg dark:text-gray-400">
           Lorem ipsum dolor sit amet consectetur adipisicing elit.
         </p>
+        
       </div>
 
       {/* Categories Section */}
-      <div className="mt-10 container mx-auto light:bg-yellow-500 p-10 rounded-2xl dark:bg-gray-800 ">
-        <h2 className="text-center font-bold mb-6 dark:text-amber-500">
+      <div className="pt-10 light:bg-yellow-500 p-10  dark:bg-black">
+       <div className="container mx-auto">
+        <h1 className="text-center font-bold mb-6 dark:text-amber-500">
           Browse Categories
-        </h2>
+        </h1>
+       </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5 mt-10">
           {isLoading
-            ? // عرض كروت Placeholder أثناء اللودينج
-              Array.from({ length: 8 }).map((_, index) => (
+            ? Array.from({ length: 8 }).map((_, index) => (
                 <div
                   key={index}
                   className="max-w-sm bg-gray-300 animate-pulse rounded-lg shadow-sm dark:bg-gray-800"
@@ -56,17 +60,19 @@ export default function Category() {
                   </div>
                 </div>
               ))
-            : // عرض الكروت الفعلية بعد تحميل البيانات
-              category.map((c: CategoryType) => (
-                <div
+            : category.map((c: CategoryType, index) => (
+                <motion.div
                   key={c._id}
-                  className="max-w-sm cardCategory bg-white hover:scale-105 duration-150 text-gray-800 border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+                  initial={{ opacity: 0, y: 50 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.1 }}
+                  className="max-w-sm cardCategory border-4 border-gray-200 bg-white hover:scale-105 duration-150 text-gray-800 rounded-lg shadow-sm dark:bg-gray-800 dark:border-amber-500 dark:text-white"
                 >
                   <a href="#">
                     <img
                       src={c.image.secure_url}
                       className="rounded-t-lg w-full max-h-[200px] object-cover"
-                      alt=""
+                      alt={c.name}
                     />
                   </a>
                   <div className="p-5">
@@ -82,9 +88,10 @@ export default function Category() {
                       Browse
                     </Link>
                   </div>
-                </div>
+                </motion.div>
               ))}
         </div>
+        
       </div>
     </>
   );
