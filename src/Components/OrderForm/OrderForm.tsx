@@ -13,7 +13,7 @@ const OrderAndPaymentForm: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedTotal = localStorage.getItem('cartTotal');
+    const storedTotal = localStorage.getItem("cartTotal");
     if (storedTotal) {
       setCartTotal(parseInt(storedTotal, 10));
     }
@@ -22,14 +22,14 @@ const OrderAndPaymentForm: React.FC = () => {
   // Formik for Order
   const formik = useFormik({
     initialValues: {
-      phone: '',
-      address: '',
-      paymentMethod: 'card',
+      phone: "",
+      address: "",
+      paymentMethod: "card",
     },
     validationSchema: Yup.object({
-      phone: Yup.string().required('Phone is required'),
-      address: Yup.string().required('Address is required'),
-      paymentMethod: Yup.string().oneOf(['card', 'cash']).required(),
+      phone: Yup.string().required("Phone is required"),
+      address: Yup.string().required("Address is required"),
+      paymentMethod: Yup.string().oneOf(["card", "cash"]).required(),
     }),
     onSubmit: async (values, { setSubmitting }) => {
       try {
@@ -58,9 +58,9 @@ const OrderAndPaymentForm: React.FC = () => {
           progress: undefined,
           theme: "colored",
         });
-      
-        if (values.paymentMethod === 'cash') {
-          navigate('/orders');
+
+        if (values.paymentMethod === "cash") {
+          navigate("/orders");
         }
       } catch (error: any) {
         toast.error("Error creating order!", {
@@ -82,7 +82,7 @@ const OrderAndPaymentForm: React.FC = () => {
   // Formik for Payment
   const payFormik = useFormik({
     initialValues: {
-      code: '',
+      code: "",
     },
     onSubmit: async (values, { setSubmitting }) => {
       setIsPaySubmitting(true);
@@ -140,88 +140,103 @@ const OrderAndPaymentForm: React.FC = () => {
   });
 
   return (
-    <div className="h-screen dark:bg-gray-900   pt-28   " > 
-    <ToastContainer />  
+    <div className="h-screen dark:bg-gray-900   pt-28   ">
+      <ToastContainer />
 
-    <div className="max-w-md mx-auto  shadow-amber-500  mt-20 p-6 bg-white  rounded-lg shadow-xl">
-      {!orderId ? (
-        <>
-          <h2 className=" font-semibold mb-4">Create New Order</h2>
-          <form onSubmit={formik.handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium">Phone</label>
-              <input
-                type="text"
-                className="w-full mt-1 p-2 border rounded-md"
-                {...formik.getFieldProps('phone')}
-                required
-              />
-              {formik.touched.phone && formik.errors.phone && (
-                <div className="text-red-500 text-xs mt-1">{formik.errors.phone}</div>
-              )}
-            </div>
-            <div>
-              <label className="block text-sm font-medium">Address</label>
-              <input
-                type="text"
-                className="w-full mt-1 p-2 border rounded-md"
-                {...formik.getFieldProps('address')}
-                required
-              />
-              {formik.touched.address && formik.errors.address && (
-                <div className="text-red-500 text-xs mt-1">{formik.errors.address}</div>
-              )}
-            </div>
-            <div>
-              <label className="block text-sm font-medium">Payment Method</label>
-              <select
-                className="w-full mt-1 p-2 border rounded-md"
-                {...formik.getFieldProps('paymentMethod')}
-              >
-                <option value="card">Card</option>
-                <option value="cash">Cash</option>
-              </select>
-            </div>
-            <button
-              type="submit"
-              disabled={formik.isSubmitting}
-              className="w-full bg-[#6B4E35]  flex items-center justify-center text-white py-2 rounded-md hover:bg-[#543e2a] transition"
+      <div className="max-w-md mx-auto  shadow-amber-500  mt-20 p-6 bg-white  rounded-lg shadow-xl">
+        {!orderId ? (
+          <>
+            <h2 className=" font-semibold mb-4">Create New Order</h2>
+            <form onSubmit={formik.handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium">Phone</label>
+                <input
+                  type="text"
+                  className="w-full mt-1 p-2 border rounded-md"
+                  {...formik.getFieldProps("phone")}
+                  required
+                />
+                {formik.touched.phone && formik.errors.phone && (
+                  <div className="text-red-500 text-xs mt-1">
+                    {formik.errors.phone}
+                  </div>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium">Address</label>
+                <input
+                  type="text"
+                  className="w-full mt-1 p-2 border rounded-md"
+                  {...formik.getFieldProps("address")}
+                  required
+                />
+                {formik.touched.address && formik.errors.address && (
+                  <div className="text-red-500 text-xs mt-1">
+                    {formik.errors.address}
+                  </div>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium">
+                  Payment Method
+                </label>
+                <select
+                  className="w-full mt-1 p-2 border rounded-md"
+                  {...formik.getFieldProps("paymentMethod")}
+                >
+                  <option value="card">Card</option>
+                  <option value="cash">Cash</option>
+                </select>
+              </div>
+              <button
+                type="submit"
+                disabled={formik.isSubmitting}
+                className="w-full bg-[#6B4E35]  flex items-center justify-center text-white py-2 rounded-md hover:bg-[#543e2a] transition"
               >
                 <span>
-                  {formik.isSubmitting ? <FaSpinner className="animate-spin" /> : "Place Order"}
+                  {formik.isSubmitting ? (
+                    <FaSpinner className="animate-spin" />
+                  ) : (
+                    "Place Order"
+                  )}
                 </span>
-            </button>
-          </form>
-        </>
-      ) : (
-        <>
-          <h2 className=" font-semibold mb-4">Create Payment</h2>
-          <form onSubmit={payFormik.handleSubmit} className="space-y-4">
-            <input type="hidden" value={orderId} />
-            <div>
-              <label className="block text-sm font-medium">Code (Optional)</label>
-              <input
-                type="text"
-                className="w-full mt-1 p-2 border rounded-md"
-                {...payFormik.getFieldProps('code')}
-                placeholder="Enter code if you have one"
+              </button>
+            </form>
+          </>
+        ) : (
+          <>
+            <h2 className=" font-semibold mb-4">Create Payment</h2>
+            <form onSubmit={payFormik.handleSubmit} className="space-y-4">
+              <input type="hidden" value={orderId} />
+              <div>
+                <label className="block text-sm font-medium">
+                  Code (Optional)
+                </label>
+                <input
+                  type="text"
+                  className="w-full mt-1 p-2 border rounded-md"
+                  {...payFormik.getFieldProps("code")}
+                  placeholder="Enter code if you have one"
                 />
-            </div>
-            <button
-              type="submit"
-              disabled={isPaySubmitting || payFormik.isSubmitting}
-              className="w-full bg-[#6B4E35] flex justify-center items-center text-center mx-auto text-white py-2 rounded-md hover:bg-[#543e2a] transition"
-            >
-              <span  >
-
-              {(isPaySubmitting || payFormik.isSubmitting) ? <FaSpinner className="animate-spin" /> : "Create Payment"}
-              </span>
-            </button>
-          </form>
-        </>
-      )}
-    </div>
               </div>
+              <button
+                type="submit"
+                disabled={isPaySubmitting || payFormik.isSubmitting}
+                className="w-full bg-[#6B4E35] flex justify-center items-center text-center mx-auto text-white py-2 rounded-md hover:bg-[#543e2a] transition"
+              >
+                <span>
+                  {isPaySubmitting || payFormik.isSubmitting ? (
+                    <FaSpinner className="animate-spin" />
+                  ) : (
+                    "Create Payment"
+                  )}
+                </span>
+              </button>
+            </form>
+          </>
+        )}
+      </div>
+    </div>
   );
 };
 

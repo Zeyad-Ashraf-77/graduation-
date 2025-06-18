@@ -308,6 +308,7 @@ export default function AddProduct() {
 
       <button
         type="submit"
+        disabled={isLoading}
         className="w-full bg-[#a9690a] text-white py-2 rounded-lg hover:bg-yellow-500 hover:text-black transition"
       >
         {isLoading ? <FaSpinner className="animate-spin text-2xl text-center mx-auto " /> : "Submit"}

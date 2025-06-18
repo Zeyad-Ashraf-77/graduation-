@@ -85,7 +85,8 @@ export default function CreateSubCategory() {
       resetForm();
       setSelectedSubCategory(null);
       fetchSubCategories(values.category);
-    } catch (error: any) {
+      } catch (error) {
+      console.log(error);
       toast.error(error.response?.data?.message || "Error occurred");
     } finally {
       setIsLoading(false);
@@ -100,7 +101,8 @@ export default function CreateSubCategory() {
       });
       toast.success("SubCategory deleted");
       fetchSubCategories(selectedCategory);
-    } catch (error: any) {
+    } catch (error) {
+      console.log(error);
       toast.error("Failed to delete subcategory");
     } finally {
       setDeletingId(null);

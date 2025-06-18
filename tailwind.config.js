@@ -8,7 +8,7 @@ export default {
   theme: {
     extend: {
       backgroundColor: {
-        'dark-body': '#101828',
+        'dark-body': '#000000',
       },
     },
   },

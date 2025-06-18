@@ -355,9 +355,9 @@ export default function Register() {
                     />
                   </div>
                 )}
-                {formik.errors.file && formik.touched.file && (
+                {formik.errors.image && formik.touched.image && (
                   <div className="text-red-500 text-xs mt-1">
-                    {formik.errors.file as string}
+                    {formik.errors.image as string}
                   </div>
                 )}
               </div>

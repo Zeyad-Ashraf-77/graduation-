@@ -133,7 +133,7 @@ async function getCategories(){
       if (formSectionRef.current) {
         formSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error updating category:", error);
       toast.error("Error updating category!", {
         position: "bottom-right",
@@ -209,7 +209,7 @@ async function getCategories(){
         progress: undefined,
         theme: "colored",
       });
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error creating category:", error);
 
       if (error.response) {

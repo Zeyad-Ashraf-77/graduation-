@@ -8,10 +8,8 @@ import "slick-carousel/slick/slick-theme.css";
 import { UserContextProvider } from "./Components/Context/UserContext.tsx";
 import RoleContextProvider from "./Components/Context/RoleContext.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import 'react-toastify/dist/ReactToastify.css';
-
-import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
 const queryClient = new QueryClient();
 
 createRoot(document.getElementById("root")!).render(
@@ -19,8 +17,7 @@ createRoot(document.getElementById("root")!).render(
     <QueryClientProvider client={queryClient}>
       <UserContextProvider>
         <RoleContextProvider>
-            <App />
-            <ToastContainer />
+          <App />
         </RoleContextProvider>
       </UserContextProvider>
     </QueryClientProvider>

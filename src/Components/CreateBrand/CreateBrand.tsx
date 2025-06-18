@@ -75,6 +75,7 @@ export default function CreateBrand() {
       fetchBrands();
       toast.success("Brand deleted successfully!");
     } catch (error) {
+      console.log(error);
       setErrorMessage("Error deleting brand.");
       toast.error("Error deleting brand.");
     } finally {

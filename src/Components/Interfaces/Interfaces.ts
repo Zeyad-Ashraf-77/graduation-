@@ -5,7 +5,7 @@ export interface FormValues {
   firstName: string;
   lastName: string;
   phoneNumber: string;
-  DOB: string; 
+  DOB: string;
   gender: string;
   address: string;
   file: File;
@@ -91,10 +91,10 @@ export interface ProductDetailsProps {
 }
 
 export interface ResetPasswordValues {
-    email: string;
-    code: string;
-    password: string;
-    cPassword: string;
+  email: string;
+  code: string;
+  password: string;
+  cPassword: string;
 }
 
 export interface User {

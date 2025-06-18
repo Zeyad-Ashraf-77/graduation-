@@ -1,11 +1,10 @@
-
-import { useState, useEffect, useCallback } from 'react';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
-import axios from 'axios';
-import { toast, ToastContainer } from 'react-toastify';
-import { FaSpinner } from 'react-icons/fa';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useState, useEffect, useCallback } from "react";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import { FaSpinner } from "react-icons/fa";
+import { useNavigate, useParams } from "react-router-dom";
 
 interface Category {
   _id: string;
@@ -32,72 +31,76 @@ export default function UpdateProduct() {
 
   const formik = useFormik({
     initialValues: {
-      name: '',
-      description: '',
-      stock: '',
-      quantity: '',
-      category: '',
-      price: '',
-      discount: '',
-      rate: '',
-      avgRating: '',
-      brand: '',
-      subCategory: '',
+      name: "",
+      description: "",
+      stock: "",
+      quantity: "",
+      category: "",
+      price: "",
+      discount: "",
+      rate: "",
+      avgRating: "",
+      brand: "",
+      subCategory: "",
       imageCover: null as File | null,
       images: [] as File[],
     },
     validationSchema: Yup.object({
-      name: Yup.string().required('Required'),
-      description: Yup.string().required('Required'),
-      stock: Yup.number().required('Required'),
-      quantity: Yup.number().required('Required'),
-      category: Yup.string().required('Required'),
-      price: Yup.number().required('Required'),
-      discount: Yup.number().required('Required'),
-      rate: Yup.number().required('Required'),
-      avgRating: Yup.number().required('Required'),
-      brand: Yup.string().required('Required'),
-      subCategory: Yup.string().required('Required'),
+      name: Yup.string().required("Required"),
+      description: Yup.string().required("Required"),
+      stock: Yup.number().required("Required"),
+      quantity: Yup.number().required("Required"),
+      category: Yup.string().required("Required"),
+      price: Yup.number().required("Required"),
+      discount: Yup.number().required("Required"),
+      rate: Yup.number().required("Required"),
+      avgRating: Yup.number().required("Required"),
+      brand: Yup.string().required("Required"),
+      subCategory: Yup.string().required("Required"),
     }),
     onSubmit: async (values) => {
       try {
         setIsLoading(true);
         const formData = new FormData();
         Object.entries(values).forEach(([key, value]) => {
-          if (key === 'images' && Array.isArray(value)) {
-            value.forEach((img) => formData.append('images', img));
-          } else if (key === 'imageCover' && value) {
+          if (key === "images" && Array.isArray(value)) {
+            value.forEach((img) => formData.append("images", img));
+          } else if (key === "imageCover" && value) {
             if (value instanceof File) {
-              formData.append('imageCover', value);
-            } else if (Array.isArray(value) && value.length > 0 && value[0] instanceof File) {
-              formData.append('imageCover', value[0]);
-            } else if (typeof value === 'string') {
-              formData.append('imageCover', value);
+              formData.append("imageCover", value);
+            } else if (
+              Array.isArray(value) &&
+              value.length > 0 &&
+              value[0] instanceof File
+            ) {
+              formData.append("imageCover", value[0]);
+            } else if (typeof value === "string") {
+              formData.append("imageCover", value);
             }
           } else {
             formData.append(key, String(value));
           }
         });
 
-        const token = localStorage.getItem('authorization');
+        const token = localStorage.getItem("authorization");
         const response = await axios.patch(
           `https://project1-kohl-iota.vercel.app/product/update/${id}`,
           formData,
           {
             headers: {
-              'Content-Type': 'multipart/form-data',
+              "Content-Type": "multipart/form-data",
               Authorization: token,
             },
           }
         );
 
-        toast.success('Product updated successfully!');
+        toast.success("Product updated successfully!");
         setTimeout(() => {
           navigate("/product");
         }, 1500);
       } catch (error) {
-        console.error('Error updating product:', error);
-        toast.error('Failed to update product. Please try again.');
+        console.error("Error updating product:", error);
+        toast.error("Failed to update product. Please try again.");
       } finally {
         setIsLoading(false);
       }
@@ -106,9 +109,12 @@ export default function UpdateProduct() {
 
   async function getCategory() {
     try {
-      const { data } = await axios.get(`https://project1-kohl-iota.vercel.app/category`, {
-        headers: { Authorization: localStorage.getItem("authorization") },
-      });
+      const { data } = await axios.get(
+        `https://project1-kohl-iota.vercel.app/category`,
+        {
+          headers: { Authorization: localStorage.getItem("authorization") },
+        }
+      );
       setCategories(data.categories);
     } catch (error) {
       console.error("Error fetching categories:", error);
@@ -117,9 +123,12 @@ export default function UpdateProduct() {
 
   async function getBrand() {
     try {
-      const { data } = await axios.get(`https://project1-kohl-iota.vercel.app/brand`, {
-        headers: { Authorization: localStorage.getItem("authorization") },
-      });
+      const { data } = await axios.get(
+        `https://project1-kohl-iota.vercel.app/brand`,
+        {
+          headers: { Authorization: localStorage.getItem("authorization") },
+        }
+      );
       setBrands(data.brands);
     } catch (error) {
       console.error("Error fetching brands:", error);
@@ -129,11 +138,14 @@ export default function UpdateProduct() {
   const fetchSubCategories = async (categoryId: string) => {
     try {
       if (categoryId) {
-        const { data } = await axios.get(`https://project1-kohl-iota.vercel.app/sub-category/${categoryId}`, {
-          headers: {
-            Authorization: localStorage.getItem("authorization") || "",
-          },
-        });
+        const { data } = await axios.get(
+          `https://project1-kohl-iota.vercel.app/sub-category/${categoryId}`,
+          {
+            headers: {
+              Authorization: localStorage.getItem("authorization") || "",
+            },
+          }
+        );
         setSubCategories(data.subCategories || []);
       } else {
         setSubCategories([]);
@@ -148,24 +160,27 @@ export default function UpdateProduct() {
     if (!id) return;
     try {
       setIsLoading(true);
-      const { data } = await axios.get(`https://project1-kohl-iota.vercel.app/product/${id}`, {
-        headers: { Authorization: localStorage.getItem("authorization") },
-      });
+      const { data } = await axios.get(
+        `https://project1-kohl-iota.vercel.app/product/${id}`,
+        {
+          headers: { Authorization: localStorage.getItem("authorization") },
+        }
+      );
 
       if (data.product) {
         const product = data.product;
         formik.setValues({
-          name: product.name || '',
-          description: product.description || '',
-          stock: product.stock?.toString() || '',
-          quantity: product.quantity?.toString() || '',
-          category: product.category?._id || '',
-          price: product.price?.toString() || '',
-          discount: product.discount?.toString() || '',
-          rate: product.rate?.toString() || '',
-          avgRating: product.avgRating?.toString() || '',
-          brand: product.brand?.name || '',
-          subCategory: product.subCategory?.name || '',
+          name: product.name || "",
+          description: product.description || "",
+          stock: product.stock?.toString() || "",
+          quantity: product.quantity?.toString() || "",
+          category: product.category?._id || "",
+          price: product.price?.toString() || "",
+          discount: product.discount?.toString() || "",
+          rate: product.rate?.toString() || "",
+          avgRating: product.avgRating?.toString() || "",
+          brand: product.brand?.name || "",
+          subCategory: product.subCategory?.name || "",
           imageCover: null,
           images: [],
         });
@@ -201,20 +216,27 @@ export default function UpdateProduct() {
         onSubmit={formik.handleSubmit}
         className="max-w-xl mt-32 mx-auto p-6 bg-[#f9f9f6] rounded-2xl shadow-lg space-y-5 border border-gray-300"
       >
-        <h2 className="font-bold mb-4 text-center text-[#a9690a]">Update Product</h2>
+        <h2 className="font-bold mb-4 text-center text-[#a9690a]">
+          Update Product
+        </h2>
 
-        {([
-          ['name', 'Product Name'],
-          ['description', 'Description'],
-          ['stock', 'Stock'],
-          ['quantity', 'Quantity'],
-          ['price', 'Price'],
-          ['discount', 'Discount'],
-          ['rate', 'Rate'],
-          ['avgRating', 'Average Rating'],
-        ] as const).map(([key, label]) => (
+        {(
+          [
+            ["name", "Product Name"],
+            ["description", "Description"],
+            ["stock", "Stock"],
+            ["quantity", "Quantity"],
+            ["price", "Price"],
+            ["discount", "Discount"],
+            ["rate", "Rate"],
+            ["avgRating", "Average Rating"],
+          ] as const
+        ).map(([key, label]) => (
           <div key={key}>
-            <label htmlFor={key} className="block font-medium text-[#6b4f4f] mb-1">
+            <label
+              htmlFor={key}
+              className="block font-medium text-[#6b4f4f] mb-1"
+            >
               {label}
             </label>
             <input
@@ -234,7 +256,10 @@ export default function UpdateProduct() {
         ))}
 
         <div>
-          <label htmlFor="category" className="block font-medium text-[#6b4f4f] mb-1">
+          <label
+            htmlFor="category"
+            className="block font-medium text-[#6b4f4f] mb-1"
+          >
             Category
           </label>
           <select
@@ -243,8 +268,8 @@ export default function UpdateProduct() {
             className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-[#f0ece4] text-gray-800"
             value={formik.values.category}
             onChange={(e) => {
-              formik.setFieldValue('category', e.target.value);
-              formik.setFieldValue('subCategory', '');
+              formik.setFieldValue("category", e.target.value);
+              formik.setFieldValue("subCategory", "");
             }}
             onBlur={formik.handleBlur}
           >
@@ -261,7 +286,10 @@ export default function UpdateProduct() {
         </div>
 
         <div>
-          <label htmlFor="subCategory" className="block font-medium text-[#6b4f4f] mb-1">
+          <label
+            htmlFor="subCategory"
+            className="block font-medium text-[#6b4f4f] mb-1"
+          >
             SubCategory
           </label>
           <select
@@ -281,12 +309,17 @@ export default function UpdateProduct() {
             ))}
           </select>
           {formik.touched.subCategory && formik.errors.subCategory && (
-            <div className="text-red-500 text-sm">{formik.errors.subCategory}</div>
+            <div className="text-red-500 text-sm">
+              {formik.errors.subCategory}
+            </div>
           )}
         </div>
 
         <div>
-          <label htmlFor="brand" className="block font-medium text-[#6b4f4f] mb-1">
+          <label
+            htmlFor="brand"
+            className="block font-medium text-[#6b4f4f] mb-1"
+          >
             Brand
           </label>
           <select
@@ -310,7 +343,9 @@ export default function UpdateProduct() {
         </div>
 
         <div>
-          <label className="block font-medium text-[#6b4f4f] mb-1">Image Cover</label>
+          <label className="block font-medium text-[#6b4f4f] mb-1">
+            Image Cover
+          </label>
           <input
             type="file"
             name="imageCover"
@@ -318,13 +353,15 @@ export default function UpdateProduct() {
             className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-[#f0ece4] text-gray-800"
             onChange={(event) => {
               const file = event.currentTarget.files?.[0] || null;
-              formik.setFieldValue('imageCover', file);
+              formik.setFieldValue("imageCover", file);
             }}
           />
         </div>
 
         <div>
-          <label className="block font-medium text-[#6b4f4f] mb-1">Images (Multiple)</label>
+          <label className="block font-medium text-[#6b4f4f] mb-1">
+            Images (Multiple)
+          </label>
           <input
             type="file"
             name="images"
@@ -333,7 +370,7 @@ export default function UpdateProduct() {
             className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-[#f0ece4] text-gray-800"
             onChange={(event) => {
               const files = event.currentTarget.files;
-              formik.setFieldValue('images', files ? Array.from(files) : []);
+              formik.setFieldValue("images", files ? Array.from(files) : []);
             }}
           />
         </div>

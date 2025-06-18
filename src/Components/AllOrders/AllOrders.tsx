@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { FaEye, FaSpinner, FaTimes } from 'react-icons/fa';
 import { MdClose } from 'react-icons/md';
@@ -22,6 +22,9 @@ interface Order {
   }[];
   address?: string;
   phone?: string;
+  userId?: {
+    _id: string;
+  };
 }
 
 export default function Orders() {
@@ -53,9 +56,10 @@ export default function Orders() {
       });
       
       setOrders(data.orders);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error fetching orders:', err);
-      setError(err.response?.data?.message || 'Failed to fetch orders. Please try again.');
+      const axiosError = err as { response?: { data?: { message?: string } } };
+      setError(axiosError?.response?.data?.message || 'Failed to fetch orders. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -79,7 +83,7 @@ export default function Orders() {
       // Set the detailed order data
       setSelectedOrder(data.order || order);
       setShowDetails(true);
-    } catch (err: any) {
+    } catch (err) {
       console.error('Error fetching order details:', err);
       // If there's an error, still show the modal with the basic order info we already have
       setSelectedOrder(order);
@@ -160,11 +164,13 @@ export default function Orders() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-              {orders.map((order) => (order.userId._id === localStorage.getItem('id') &&<tr key={order._id} className="hover:bg-[#efebd9] dark:hover:bg-gray-700 transition-colors">
-                  <td className="px-4 py-3 dark:text-white">{order.id || order._id.substring(0, 8)}</td>
-                  <td className="px-4 py-3 dark:text-white">{formatDate(order.updatedAt)}</td>
-                  <td className="px-4 py-3">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
+              {orders.map((order) => 
+                order.userId?._id === localStorage.getItem('id') ? (
+                  <tr key={order._id} className="hover:bg-[#efebd9] dark:hover:bg-gray-700 transition-colors">
+                    <td className="px-4 py-3 dark:text-white">{order.id || order._id.substring(0, 8)}</td>
+                    <td className="px-4 py-3 dark:text-white">{formatDate(order.updatedAt)}</td>
+                    <td className="px-4 py-3">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
                       {order.status || 'Processing'}
                     </span>
                   </td>
@@ -179,7 +185,8 @@ export default function Orders() {
                     </button>
                   </td>
                 </tr>
-              ))}
+                ) : null
+              )}
             </tbody>
           </table>
         </div>

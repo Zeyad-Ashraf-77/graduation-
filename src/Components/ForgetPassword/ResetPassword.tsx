@@ -144,7 +144,9 @@ export default function ResetPassword() {
               {formik.errors.cPassword}
             </p>
           )}
-        <Link to="/login" className="text-amber-500 hover:underline">Back to login</Link>
+          <Link to="/login" className="text-amber-500 hover:underline">
+            Back to login
+          </Link>
         </div>
 
         <button
@@ -152,7 +154,11 @@ export default function ResetPassword() {
           className="text-white bg-yellow-700 cursor-pointer hover:bg-yellow-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
         >
           {" "}
-          {isLoading ? <FaSpinner className="animate-spin" /> : "Reset Password"}{" "}
+          {isLoading ? (
+            <FaSpinner className="animate-spin" />
+          ) : (
+            "Reset Password"
+          )}{" "}
         </button>
       </form>
     </div>

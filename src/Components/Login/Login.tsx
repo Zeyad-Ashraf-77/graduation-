@@ -4,7 +4,7 @@ import axios from "axios";
 import { FormValues } from "../Interfaces/Interfaces";
 import * as Yup from "yup";
 import { Link, useNavigate } from "react-router-dom";
-import image1 from '../../assets/images/pin/hero2.webp'
+import image1 from "../../assets/images/pin/hero2.webp";
 
 export default function Register() {
   const [apiError, setApiError] = useState("");
@@ -87,10 +87,17 @@ export default function Register() {
                 <span className="text-lg font-semibold text-[#222]">Login</span>
               </div>
               <h2 className="text-3xl font-bold text-[#222] mb-2">Hello,</h2>
-              <h2 className="text-3xl font-bold text-[#222] mb-6">Welcome Back</h2>
-              <p className="text-sm text-gray-500 mb-8">Login to manage your account.</p>
+              <h2 className="text-3xl font-bold text-[#222] mb-6">
+                Welcome Back
+              </h2>
+              <p className="text-sm text-gray-500 mb-8">
+                Login to manage your account.
+              </p>
               {apiError && (
-                <div className="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-100" role="alert">
+                <div
+                  className="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-100"
+                  role="alert"
+                >
                   {apiError}
                 </div>
               )}
@@ -104,7 +111,9 @@ export default function Register() {
                     className="bg-[#f9f9f6] border border-[#e0c8b1] text-gray-900 text-sm rounded-lg focus:ring-[#4caf50] focus:border-[#4caf50] block w-full p-2.5"
                   />
                   {formik.errors.email && formik.touched.email && (
-                    <p className="mt-2 text-sm text-red-600">{formik.errors.email}</p>
+                    <p className="mt-2 text-sm text-red-600">
+                      {formik.errors.email}
+                    </p>
                   )}
                 </div>
                 <div>
@@ -116,11 +125,16 @@ export default function Register() {
                     className="bg-[#f9f9f6] border border-[#e0c8b1] text-gray-900 text-sm rounded-lg focus:ring-[#4caf50] focus:border-[#4caf50] block w-full p-2.5"
                   />
                   {formik.errors.password && formik.touched.password && (
-                    <p className="mt-2 text-sm text-red-600">{formik.errors.password}</p>
+                    <p className="mt-2 text-sm text-red-600">
+                      {formik.errors.password}
+                    </p>
                   )}
                 </div>
                 <div className="flex justify-between items-center">
-                  <Link to="/forgetPassword" className="text-sm text-[#4caf50] hover:underline">
+                  <Link
+                    to="/forgetPassword"
+                    className="text-sm text-[#4caf50] hover:underline"
+                  >
                     Forgot your password?
                   </Link>
                 </div>
@@ -132,19 +146,31 @@ export default function Register() {
                 </button>
                 <div className="flex items-center justify-center gap-4 mt-4">
                   <span className="text-gray-400">Or</span>
-                  <button type="button" className="rounded-full border border-gray-200 p-2 hover:bg-gray-50">
+                  <button
+                    type="button"
+                    className="rounded-full border border-gray-200 p-2 hover:bg-gray-50"
+                  >
                     <i className="fab fa-facebook-f text-[#4caf50]"></i>
                   </button>
-                  <button type="button" className="rounded-full border border-gray-200 p-2 hover:bg-gray-50">
+                  <button
+                    type="button"
+                    className="rounded-full border border-gray-200 p-2 hover:bg-gray-50"
+                  >
                     <i className="fab fa-google text-[#4caf50]"></i>
                   </button>
-                  <button type="button" className="rounded-full border border-gray-200 p-2 hover:bg-gray-50">
+                  <button
+                    type="button"
+                    className="rounded-full border border-gray-200 p-2 hover:bg-gray-50"
+                  >
                     <i className="fab fa-instagram text-[#4caf50]"></i>
                   </button>
                 </div>
                 <p className="text-sm text-center text-gray-500 mt-6">
-                  Don’t have an account?{' '}
-                  <Link to="/register" className="text-[#4caf50] hover:underline font-semibold">
+                  Don’t have an account?{" "}
+                  <Link
+                    to="/register"
+                    className="text-[#4caf50] hover:underline font-semibold"
+                  >
                     Signup
                   </Link>
                 </p>

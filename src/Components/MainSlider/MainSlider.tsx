@@ -1,45 +1,53 @@
 import { useEffect, useState } from "react";
 import Slider from "react-slick";
 import axios from "axios";
-import image1 from '../../assets/images/pin/slider1 (1).jpeg'
-import image2 from '../../assets/images/pin/slider2 (2).jpeg'
-import image3 from '../../assets/images/pin/slider3 (3).jpeg'
-import image4 from '../../assets/images/pin/slider4 (4).jpeg'
-import image5 from '../../assets/images/pin/s1.jpeg'
-import image6 from '../../assets/images/pin/s2.jpeg'
-import image7 from '../../assets/images/pin/s3.jpeg'
-import image8 from '../../assets/images/pin/s4.jpeg'
-import image9 from '../../assets/images/pin/s5.jpeg'
-import image10 from '../../assets/images/pin/s6.jpeg'
-import image11 from '../../assets/images/pin/s7.jpeg'
+import image1 from "../../assets/images/pin/slider1 (1).jpeg";
+import image2 from "../../assets/images/pin/slider2 (2).jpeg";
+import image3 from "../../assets/images/pin/slider3 (3).jpeg";
+import image4 from "../../assets/images/pin/slider4 (4).jpeg";
+import image5 from "../../assets/images/pin/s1.jpeg";
+import image6 from "../../assets/images/pin/s2.jpeg";
+import image7 from "../../assets/images/pin/s3.jpeg";
+import image8 from "../../assets/images/pin/s4.jpeg";
+import image9 from "../../assets/images/pin/s5.jpeg";
+import image10 from "../../assets/images/pin/s6.jpeg";
+import image11 from "../../assets/images/pin/s7.jpeg";
 
-interface Brand {
-  _id: string;
-  name: string;
-  description?: string;
-  image?: { secure_url: string };
-}
+
 
 export default function MainSlider() {
-  const [brands, setBrands] = useState<Brand[]>([]);
+  const [brands, setBrands] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const images = [image1, image2, image3, image4, image5, image6, image7, image8, image9, image10, image11];
+  const images = [
+    image1,
+    image2,
+    image3,
+    image4,
+    image5,
+    image6,
+    image7,
+    image8,
+    image9,
+    image10,
+    image11,
+  ];
 
   useEffect(() => {
     try {
-      
-      if(localStorage.getItem("authorization")){
-      axios
-        .get("https://project1-kohl-iota.vercel.app/brand", {
-          headers: { Authorization: localStorage.getItem("authorization") || "" },
-        })
-        .then((res) => setBrands(res.data.brands))
-        .catch(() => setBrands([]))
-        .finally(() => setIsLoading(false));
+      if (localStorage.getItem("authorization")) {
+        axios
+          .get("https://project1-kohl-iota.vercel.app/brand", {
+            headers: {
+              Authorization: localStorage.getItem("authorization") || "",
+            },
+          })
+          .then((res) => setBrands(res.data.brands))
+          .catch(() => setBrands([]))
+          .finally(() => setIsLoading(false));
       }
     } catch (error) {
       console.error("Error fetching brands:", error);
-    }finally {
+    } finally {
       setIsLoading(false);
     }
   }, []);
@@ -97,7 +105,6 @@ export default function MainSlider() {
           ))}
         </Slider>
         {/* Decorative Glow */}
-       
       </div>
 
       {/* Static Images */}
