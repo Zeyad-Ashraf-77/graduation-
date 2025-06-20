@@ -132,7 +132,7 @@ export default function CreateBrand() {
       const formData = new FormData();
       formData.append("name", values.name);
       if (values.image && values.image instanceof File) {
-        formData.append("image", values.image);
+        formData.append("file", values.image);
       }
       formData.append("category", values.category);
 
