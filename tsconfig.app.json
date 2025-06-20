@@ -22,5 +22,15 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src"]
+  "include": ["src"],
+  "name": "graduation",
+  "version": "0.0.0",
+  "homepage": "https://Zeyad-Ashraf-77.github.io/graduation",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "echo Deploy script goes here"
+  }
 }

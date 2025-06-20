@@ -149,17 +149,7 @@ async function getCategories(){
         progress: undefined,
         theme: "colored",
       });
-      if (error.response) {
-        setErrorMessage(
-          error.response.data.message || "Error updating category. Please try again."
-        );
-      } else if (error.request) {
-        setErrorMessage(
-          "No response from server. Please check your internet connection."
-        );
-      } else {
-        setErrorMessage("Error setting up the request. Please try again.");
-      }
+
     } finally {
       setIsLoading(false);
     }
@@ -216,17 +206,7 @@ async function getCategories(){
     } catch (error) {
       console.error("Error creating category:", error);
 
-      if (error instanceof Error) {
-        setErrorMessage(
-          error.message || "Error creating category. Please try again."
-        );
-      } else if (error.request) {
-        setErrorMessage(
-          "No response from server. Please check your internet connection."
-        );
-      } else {
-        setErrorMessage("Error setting up the request. Please try again.");
-      }
+     
 
       toast.error(
         "Error creating category. Please try again.",

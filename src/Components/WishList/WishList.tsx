@@ -8,17 +8,15 @@ import { useNavigate } from "react-router-dom";
 import { useCart } from "../Context/CartContext";
 
 const Wishlist: React.FC = () => {
-  const [wishlist, setWishlist] = useState<Product[]>([]);
+  const [wishlist, setWishlist] = useState<Array<Product & { subPrice?: number }>>([]);
   const [addingToCart, setAddingToCart] = useState<string | null>(null);
-  const [removingFromWishlist, setRemovingFromWishlist] = useState<
-    string | null
-  >(null);
+  const [removingFromWishlist, setRemovingFromWishlist] = useState<string | null>(null);
   const navigate = useNavigate();
   const { refreshCart } = useCart();
 
-  async function gitWishList() {
+  const getWishlist = async () => {
     try {
-      const { data } = await axios.get(
+      const { data } = await axios.get<{ data: Array<Product & { subPrice?: number }> }>(
         `https://project1-kohl-iota.vercel.app/product/r/washlist`,
         {
           headers: {
@@ -27,12 +25,12 @@ const Wishlist: React.FC = () => {
           },
         }
       );
-      console.log(data.user.washlist);
-      setWishlist(data.user.washlist);
+      setWishlist(data.data);
     } catch (error) {
       console.error("Error fetching wishlist:", error);
+      toast.error("Failed to load wishlist");
     }
-  }
+  };
 
   async function addToCart(productId: string) {
     try {
@@ -103,7 +101,7 @@ const Wishlist: React.FC = () => {
         progress: undefined,
         theme: "colored",
       });
-      gitWishList();
+getWishlist();
     } catch (error) {
       console.log("Error removing from wishlist:", error);
       toast.error("Error  removing from wishlist!", {
@@ -122,7 +120,7 @@ const Wishlist: React.FC = () => {
   }
 
   useEffect(() => {
-    gitWishList();
+    getWishlist();
   }, []);
 
   return (
@@ -157,19 +155,16 @@ const Wishlist: React.FC = () => {
               </h2>
               <p className="text-sm text-gray-600">{item.describtion}</p>
               <div className="flex items-center  justify-between">
-                {item.subPrice ? (
+                {item.subPrice && item.subPrice > 0 ? (
                   <div>
                     <p className="text-md text-pink-700 font-bold mt-2">
-                      {" "}
-                      <span className=" line-through text-red-500">
-                        Old Price:
+                      <span className="line-through text-red-500">
+                        Old Price: ${item.price}
                       </span>
-                      ${item.price}
                     </p>
                     <p className="text-md text-pink-700 font-bold mt-2">
-                      {" "}
-                      <span className="text-green-500">New Price:</span>$
-                      {item.subPrice}
+                      <span className="text-green-500">New Price: </span>
+                      ${item.subPrice?.toFixed(2)}
                     </p>
                   </div>
                 ) : (

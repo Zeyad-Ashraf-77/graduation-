@@ -37,8 +37,10 @@ export interface FormikValues {
 export interface CategoryType {
   _id: string;
   name: string;
-  image: string;
-  secure_url: string;
+  image: {
+    secure_url: string;
+  };
+  
 }
 
 export interface SubCategoryType {

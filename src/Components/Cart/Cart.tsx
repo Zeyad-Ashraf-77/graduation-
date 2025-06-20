@@ -11,7 +11,6 @@ const Cart = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [productLength, setProductLength] = useState(0);
-  const [isLoadingDelete, setIsLoadingDelete] = useState(false);
   const navigate = useNavigate();
   const { refreshCart } = useCart();
 
