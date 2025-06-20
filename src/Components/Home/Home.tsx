@@ -88,8 +88,9 @@ export default function HomePage() {
             <ProductListPage />
           </div>
         </div>
-
-        <CartWidget />
+      {localStorage.getItem("authorization") &&
+       <CartWidget /> }
+       
 
         <motion.section
           className="py-16 px-4 mb-4 light:bg-[#cfc0a2] category dark:bg-amber-50/50"
