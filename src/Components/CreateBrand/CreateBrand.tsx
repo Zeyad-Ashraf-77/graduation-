@@ -282,11 +282,11 @@ export default function CreateBrand() {
                       className="block w-full text-sm text-[#4e342e] border-2 border-[#4e342e] rounded-lg p-3 file:mr-4 file:py-2 file:px-6 file:rounded-lg file:border-0 file:bg-[#4e342e] file:text-white hover:file:bg-[#6d4c41] transition"
                       onChange={(event) => {
                         const file = event.currentTarget.files![0];
-                        setFieldValue("image", file);
+                        setFieldValue("file", file);
                       }}
                     />
                     <ErrorMessage
-                      name="image"
+                      name="file"
                       component="div"
                       className="text-red-500 text-sm mt-1"
                     />
