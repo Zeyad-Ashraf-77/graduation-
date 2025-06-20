@@ -13,10 +13,7 @@ import image9 from "../../assets/images/pin/s5.jpeg";
 import image10 from "../../assets/images/pin/s6.jpeg";
 import image11 from "../../assets/images/pin/s7.jpeg";
 
-
-
 export default function MainSlider() {
-  const [brands, setBrands] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const images = [
     image1,
@@ -41,8 +38,12 @@ export default function MainSlider() {
               Authorization: localStorage.getItem("authorization") || "",
             },
           })
-          .then((res) => setBrands(res.data.brands))
-          .catch(() => setBrands([]))
+          .then((res) => {
+            console.log("Brands fetched successfully:", res.data.brands);
+          })
+          .catch((err) => {
+            console.log(err);
+          })
           .finally(() => setIsLoading(false));
       }
     } catch (error) {

@@ -83,7 +83,7 @@ export default function UpdateProduct() {
         });
 
         const token = localStorage.getItem("authorization");
-        const response = await axios.patch(
+         await axios.patch(
           `https://project1-kohl-iota.vercel.app/product/update/${id}`,
           formData,
           {

@@ -62,7 +62,8 @@ const OrderAndPaymentForm: React.FC = () => {
         if (values.paymentMethod === "cash") {
           navigate("/orders");
         }
-      } catch (error: any) {
+      } catch (error) {
+        console.error("Error creating order:", error);
         toast.error("Error creating order!", {
           position: "bottom-left",
           autoClose: 3000,
@@ -121,7 +122,8 @@ const OrderAndPaymentForm: React.FC = () => {
         setTimeout(() => {
           window.location.href = data.data.url;
         }, 1000);
-      } catch (error: any) {
+      } catch (error) {
+        console.error("Error creating payment:", error);
         toast.error("Error creating order!", {
           position: "bottom-left",
           autoClose: 3000,

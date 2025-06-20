@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
 import * as Yup from "yup";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -40,7 +40,7 @@ export default function CreateSubCategory() {
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   const authHeader = { Authorization: localStorage.getItem("authorization") || "" };
-
+  
   useEffect(() => {
     axios
       .get("https://project1-kohl-iota.vercel.app/category", { headers: authHeader })
@@ -58,7 +58,7 @@ export default function CreateSubCategory() {
       .catch(() => toast.error("Error fetching subcategories"));
   };
 
-  const handleSubmit = async (values: FormValues, { resetForm }: any) => {
+  const handleSubmit = async (values: FormValues, { resetForm }: FormikHelpers<FormValues>) => {
     const formData = new FormData();
     formData.append("name", values.name);
     formData.append("category", values.category); // <-- اسم الكاتيجوري
@@ -87,7 +87,7 @@ export default function CreateSubCategory() {
       fetchSubCategories(values.category);
       } catch (error) {
       console.log(error);
-      toast.error(error.response?.data?.message || "Error occurred");
+      toast.error(error as string || "Error occurred");
     } finally {
       setIsLoading(false);
     }
@@ -117,7 +117,7 @@ export default function CreateSubCategory() {
         <div className="bg-[#efebd9] shadow-xl shadow-amber-400 rounded-2xl p-8 mb-12">
           <h2 className="font-bold mb-6 text-[#4e342e] text-center">Create or Update SubCategory</h2>
 
-          <Formik
+          <Formik<FormValues>
             initialValues={{
               name: selectedSubCategory?.name || "",
               image: null,
@@ -127,7 +127,7 @@ export default function CreateSubCategory() {
             validationSchema={validationSchema}
             onSubmit={handleSubmit}
           >
-            {({ setFieldValue, values }) => (
+            {({ setFieldValue }) => (
               <Form className="space-y-6">
                 <div>
                   <label className="block mb-2 text-[#4e342e] font-semibold">SubCategory Name</label>

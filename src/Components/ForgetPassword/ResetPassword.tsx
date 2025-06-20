@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useFormik } from "formik";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ResetPasswordValues } from "../Interfaces/Interfaces";
 import { toast, ToastContainer } from "react-toastify";
