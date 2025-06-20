@@ -5,6 +5,27 @@ import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { toast, ToastContainer } from "react-toastify";
 import { FaCartArrowDown, FaSpinner, FaStar } from "react-icons/fa";
+import { useCart } from "../Context/CartContext";
+
+// Define proper types
+interface ProductImage {
+  secure_url: string;
+}
+
+interface Product {
+  _id: string;
+  name: string;
+  describtion: string;
+  price: number;
+  subPrice: number;
+  isAvailable: boolean;
+  stock: number;
+  avgRating: number;
+  imageCover: ProductImage;
+  images: ProductImage[];
+  brand?: { name: string };
+  category?: { name: string };
+}
 
 const fadeUpVariant = {
   hidden: { opacity: 0, y: 50 },
@@ -14,18 +35,39 @@ const fadeUpVariant = {
     transition: { duration: 0.6, ease: "easeOut" },
   },
 };
+
 export default function BrandDetails() {
-  const [brand, setBrand] = useState(null);
+  const [brand, setBrand] = useState<Product[]>([]);
   const [isLoadingButton, setIsLoadingButton] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [currentImageIndices, setCurrentImageIndices] = useState<{ [key: string]: number }>({});
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+  const { refreshCart } = useCart();
 
-  const { id } = useParams();
+  // Function to handle image click for specific product
+  const handleImageClick = (productId: string, index: number) => {
+    setCurrentImageIndices(prev => ({
+      ...prev,
+      [productId]: index
+    }));
+  };
+
+  // Get current image to display for specific product
+  const getCurrentImage = (product: Product) => {
+    const currentIndex = currentImageIndices[product._id] || 0;
+    
+    if (currentIndex === 0) {
+      return product.imageCover.secure_url;
+    } else {
+      return product.images[currentIndex - 1].secure_url;
+    }
+  };
 
   async function addToWishlist(productId: string) {
     try {
       setIsLoadingButton(true);
-      const { data } = await axios.patch(
+      await axios.patch(
         `https://project1-kohl-iota.vercel.app/product/washlist/${productId}`,
         {},
         {
@@ -35,9 +77,8 @@ export default function BrandDetails() {
           },
         }
       );
-      console.log(data);
+   
       toast.success("Product added to wishlist successfully!");
-      setIsLoadingButton(false);
     } catch (error) {
       console.log("Error adding to wishlist:", error);
       toast.error("Error adding product to wishlist!");
@@ -45,10 +86,11 @@ export default function BrandDetails() {
       setIsLoadingButton(false);
     }
   }
+
   async function addToCart(productId: string) {
     try {
       setIsLoadingButton(true);
-      const { data } = await axios.post(
+      await axios.post(
         `https://project1-kohl-iota.vercel.app/cart/create`,
         {
           productId: productId,
@@ -61,9 +103,8 @@ export default function BrandDetails() {
           },
         }
       );
-      console.log(data);
+      refreshCart();
       toast.success("Product added to cart successfully!");
-      setIsLoadingButton(false);
     } catch (error) {
       console.log("Error adding to cart:");
       if (axios.isAxiosError(error) && error.response?.data?.message) {
@@ -88,7 +129,7 @@ export default function BrandDetails() {
         }
       );
       setBrand(data.products);
-      console.log(data.products);
+   
     } catch (error) {
       console.log(error);
     } finally {
@@ -115,9 +156,9 @@ export default function BrandDetails() {
     );
   }
   return (
-    <div className="">
+    <div className=" dark:bg-gray-900 light:bg-white  light:text-gray-800 dark:text-white py-8 sm:pt-6 font-sans min-h-screen ">
       <h1 className="mt-28 font-bold text-center">Brand Details</h1>
-      {brand?.map((item: any, index: number) => (
+      {brand?.map((item: Product, index: number) => (
         <motion.div
           key={index}
           className="max-w-7xl mx-auto px-4 py-10 grid grid-cols-1 lg:grid-cols-2 gap-10"
@@ -136,22 +177,36 @@ export default function BrandDetails() {
             <ToastContainer />
             <div className="w-full h-[350px] sm:h-[400px] rounded-lg overflow-hidden">
               <img
-              onClick={() => {
-                    navigate(`/productDetails/${item._id}`);
-              }}
-                src={item.imageCover.secure_url}
+                onClick={() => {
+                  navigate(`/productDetails/${item._id}`);
+                }}
+                src={getCurrentImage(item)}
                 alt={item.name}
                 className="w-full h-full object-cover"
               />
             </div>
             <div className="flex gap-3 mt-4 overflow-x-auto">
-              {item.images.map((img, i) => (
+              {/* Main cover image thumbnail */}
+              <motion.img
+                src={item.imageCover.secure_url}
+                alt="Main Image"
+                className={`w-20 h-20 object-cover border rounded-md cursor-pointer hover:ring-2 hover:ring-[#6B4E35] ${
+                  (currentImageIndices[item._id] || 0) === 0 ? 'ring-2 ring-[#6B4E35]' : ''
+                }`}
+                variants={fadeUpVariant}
+                onClick={() => handleImageClick(item._id, 0)}
+              />
+              {/* Additional images thumbnails */}
+              {item.images.map((img: ProductImage, i: number) => (
                 <motion.img
                   key={i}
                   src={img.secure_url}
                   alt={`Thumbnail ${i + 1}`}
-                  className="w-20 h-20 object-cover border rounded-md cursor-pointer hover:ring-2 hover:ring-[#6B4E35]"
+                  className={`w-20 h-20 object-cover border rounded-md cursor-pointer hover:ring-2 hover:ring-[#6B4E35] ${
+                    (currentImageIndices[item._id] || 0) === i + 1 ? 'ring-2 ring-[#6B4E35]' : ''
+                  }`}
                   variants={fadeUpVariant}
+                  onClick={() => handleImageClick(item._id, i + 1)}
                 />
               ))}
             </div>
@@ -162,13 +217,13 @@ export default function BrandDetails() {
             className="space-y-4 text-gray-800"
             variants={fadeUpVariant}
           >
-            <h2 className="text-3xl font-bold">{item.name}</h2>
-            <p className="text-gray-600">{item.describtion}</p>
+            <h2 className="text-3xl dark:text-white font-bold">{item.name}</h2>
+            <p className="light:text-gray-600 dark:text-white">{item.describtion}</p>
 
-            <p className="text-2xl font-semibold text-red-700 line-through ">
+            <p className="text-2xl dark:text-white font-semibold text-red-700 line-through ">
               ${item.price.toFixed(2)} No Discount
             </p>
-            <p className="text-2xl font-semibold text-green-700">
+            <p className="text-2xl dark:text-white font-semibold text-green-700">
               ${item.subPrice.toFixed(2)} With Discount
             </p>
 
@@ -203,12 +258,12 @@ export default function BrandDetails() {
               </button>
               <button
                 onClick={() => addToWishlist(item._id)}
-                className="border border-gray-400 hover:bg-gray-100 transition px-6 py-2 rounded-md font-medium text-gray-800"
+                className="border border-gray-400 hover:bg-black  transition px-6 py-2 rounded-md font-medium text-gray-800"
               >
                 {isLoadingButton ? (
                   <FaSpinner className="animate-spin" />
                 ) : (
-                  <span className="flex items-center gap-1">
+                  <span className="flex items-center dark:text-white gap-1">
                     Add to Wishlist <FaCartArrowDown />
                   </span>
                 )}
@@ -219,19 +274,19 @@ export default function BrandDetails() {
               className="text-sm mt-6 space-y-1 text-gray-700"
               variants={fadeUpVariant}
             >
-              <p className="flex items-center gap-1">
+              <p className="flex dark:text-white items-center gap-1">
                 <span className="font-medium">Rate:</span>{" "}
                 {item.avgRating || "N/A"} <FaStar className="text-amber-400" />
               </p>
-              <p>
+              <p className="dark:text-white">
                 <span className="font-medium">Brand:</span>{" "}
                 {item.brand?.name || "N/A"}
               </p>
-              <p>
+              <p className="dark:text-white" >
                 <span className="font-medium">Category:</span>{" "}
                 {item.category?.name || "N/A"}
               </p>
-              <p>
+              <p className="dark:text-white" >
                 <span className="font-medium">Handmade:</span> Yes
               </p>
             </motion.div>

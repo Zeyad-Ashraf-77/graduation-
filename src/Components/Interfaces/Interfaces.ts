@@ -1,14 +1,19 @@
-export interface FormValues {
+export interface FormValuesRegister {
   email: string;
   password: string;
   cPassword: string;
   firstName: string;
   lastName: string;
-  phoneNumber: string;
+  phone: string;
   DOB: string;
   gender: string;
   address: string;
-  file: File;
+  image: File;
+}
+
+export interface FormValuesLogin {
+  email: string;
+  password: string;
 }
 
 export type RegisterRole = "user" | "crafter";
@@ -34,6 +39,14 @@ export interface CategoryType {
   name: string;
   image: string;
   secure_url: string;
+}
+
+export interface SubCategoryType {
+  _id: string;
+  name: string;
+  image: {
+    secure_url: string;
+  };
 }
 
 export interface Product {

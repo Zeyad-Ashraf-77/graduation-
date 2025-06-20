@@ -30,6 +30,8 @@ import UpdatePassword from "./Components/UpdatePassword/UpdatePassword";
 import Coupon from "./Components/Coupon/Coupon";
 import ProtectedRoute from "./Components/ProtectedRoute/ProtectedRoute";
 import BrandDetails from "./Components/BrandDetails/BrandDetails";
+import { CartProvider } from "./Components/Context/CartContext";
+
 function App() {
   const router = createBrowserRouter([
     {
@@ -235,8 +237,10 @@ function App() {
 
   return (
     <>
-      <ToastContainer />
-      <RouterProvider router={router}></RouterProvider>
+      <CartProvider>
+        <ToastContainer />
+        <RouterProvider router={router}></RouterProvider>
+      </CartProvider>
     </>
   );
 }

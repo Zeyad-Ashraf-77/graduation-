@@ -19,10 +19,19 @@ export default function AdminDashboard() {
     }[]
   >([]);
   const [ordersDs, setOrdersDs] = useState<
-    { _id: string; orderId: string; date: string; customer: string }[]
+    {
+      _id?: string;
+      orderId?: string;
+      id?: string;
+      createdAt?: string;
+      date?: string;
+      updatedAt?: string;
+      user?: { name: string };
+      customer?: string;
+      userName?: string;
+    }[]
   >([]);
   const [categoryNum, setCategoryNum] = useState(0);
-  const [userNum, setUserNum] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [productsDs, setProductsDs] = useState<
     {
@@ -66,7 +75,6 @@ export default function AdminDashboard() {
       );
       // console.log(data.data);
       setUserDs(data.data[1].value);
-      setUserNum(data.data[0].value.length);
     } catch (error) {
       console.log(error);
     } finally {
@@ -99,7 +107,7 @@ export default function AdminDashboard() {
           headers: { Authorization: localStorage.getItem("authorization") },
         }
       );
-      // console.log(data.orders);
+      console.log("Orders data:", data.orders);
       setOrdersDs(data.orders);
     } catch (error) {
       console.log(error);
@@ -110,7 +118,7 @@ export default function AdminDashboard() {
 
   async function blockUser(id: string) {
     try {
-      const { data } = await axios.patch(
+      await axios.patch(
         `https://project1-kohl-iota.vercel.app/users/block/${id}`,
         {
           headers: { Authorization: localStorage.getItem("authorization") },
@@ -234,13 +242,13 @@ export default function AdminDashboard() {
                 {ordersDs.slice(0, 10).map((order, index) => (
                   <tr key={index}>
                     <td className="py-2 text-[#4e342e] dark:text-gray-200 px-2">
-                      {order.id}
+                      {order._id || order.orderId || order.id || "N/A"}
                     </td>
                     <td className="py-2 text-[#4e342e] dark:text-gray-200 px-2">
-                      {order.updatedAt}
+                      {order.createdAt || order.date || order.updatedAt || "N/A"}
                     </td>
                     <td className="py-2 text-[#4e342e] dark:text-gray-200 px-2">
-                      {order.address}
+                      {order.user?.name || order.customer || order.userName || "N/A"}
                     </td>
                   </tr>
                 ))}
@@ -254,24 +262,24 @@ export default function AdminDashboard() {
           <h2 className="text-lg font-semibold mb-4 dark:text-amber-500">
             Manage Categories
           </h2>
-          <ul className="space-y-2">
-            {categoryDs.map((category) => (
-              <li
-                key={category._id}
-                className="bg-[#efebd9] dark:text-gray-100 dark:bg-gray-800 flex items-center justify-between rounded-xl px-3 py-2"
-              >
-                <span>{category.name}</span>
-              </li>
-            ))}
-            <li>
-              <button
-                onClick={() => navigate("/layoutAdmin/createCategory")}
-                className="mt-2 cursor-pointer bg-yellow-800 dark:bg-amber-700 font-bold light:text-gray-800 dark:text-white w-full border rounded-lg px-3 py-2 text-center"
-              >
-                + Add Category
-              </button>
-            </li>
-          </ul>
+          <div className="max-h-[300px] overflow-y-auto">
+            <ul className="space-y-2">
+              {categoryDs.map((category) => (
+                <li
+                  key={category._id}
+                  className="bg-[#efebd9] dark:text-gray-100 dark:bg-gray-800 flex items-center justify-between rounded-xl px-3 py-2"
+                >
+                  <span>{category.name}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <button
+            onClick={() => navigate("/layoutAdmin/createCategory")}
+            className="mt-4 cursor-pointer bg-yellow-800 dark:bg-amber-700 font-bold light:text-gray-800 dark:text-white w-full border rounded-lg px-3 py-2 text-center"
+          >
+            + Add Category
+          </button>
         </div>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -282,99 +290,101 @@ export default function AdminDashboard() {
           <h2 className="text-lg font-semibold mb-4 dark:text-amber-500">
             Manage Brands
           </h2>
-          <ul className="space-y-2">
-            {brandsDs.map((brand) => (
-              <li
-                key={brand._id}
-                className="bg-[#efebd9] dark:bg-gray-800 dark:text-gray-100 flex items-center justify-between rounded-xl px-3 py-2"
-              >
-                <span>{brand.name}</span>
-              </li>
-            ))}
-            <li>
-              <button
-                onClick={() => navigate("/layoutAdmin/createBrand")}
-                className="mt-2 cursor-pointer bg-yellow-800 dark:bg-amber-700 hover:dark:bg-amber-600 font-bold light:text-gray-800 dark:text-white w-full border rounded-lg px-3 py-2 text-center transition-colors duration-200"
-              >
-                + Add Brand
-              </button>
-            </li>
-          </ul>
+          <div className="max-h-[300px] overflow-y-auto">
+            <ul className="space-y-2">
+              {brandsDs.map((brand) => (
+                <li
+                  key={brand._id}
+                  className="bg-[#efebd9] dark:bg-gray-800 dark:text-gray-100 flex items-center justify-between rounded-xl px-3 py-2"
+                >
+                  <span>{brand.name}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <button
+            onClick={() => navigate("/layoutAdmin/createBrand")}
+            className="mt-4 cursor-pointer bg-yellow-800 dark:bg-amber-700 hover:dark:bg-amber-600 font-bold light:text-gray-800 dark:text-white w-full border rounded-lg px-3 py-2 text-center transition-colors duration-200"
+          >
+            + Add Brand
+          </button>
         </div>
       </div>
       <div className="border shadow-xl shadow-yellow-500 dark:border-amber-400 rounded-xl p-6 overflow-x-auto bg-white/80 dark:bg-gray-800/80 ">
         <h2 className="text-2xl font-bold dark:text-amber-500 light:text-gray-800 mb-6">
           Users
         </h2>
-        <table className="min-w-full text-base rounded-xl overflow-hidden">
-          <thead className="border-b  light:bg-gray-200 dark:bg-gray-900/90 dark:border-amber-400 ">
-            <tr>
-              <th className="px-4 py-3  text-md light:text-gray-800 dark:text-white tracking-wide">
-                ID
-              </th>
-              <th className="px-4 py-3  text-md light:text-gray-800 dark:text-white tracking-wide">
-                Name
-              </th>
-              <th className="px-4 py-3  text-md light:text-gray-800 dark:text-white tracking-wide">
-                Email
-              </th>
-              <th className="px-4 py-3  text-md light:text-gray-800 dark:text-white tracking-wide">
-                Role
-              </th>
-              <th className="px-4 py-3  text-md light:text-gray-800 dark:text-white tracking-wide">
-                Status
-              </th>
-              <th className="px-4 py-3  text-md light:text-gray-800 dark:text-white tracking-wide">
-                Action
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {userDs.map((user) => (
-              <tr
-                key={user._id}
-                className="border-b dark:border-gray-700 hover:bg-yellow-50 dark:hover:bg-gray-900/70 transition-colors duration-200 "
-              >
-                <td className="px-4 py-3  text-sm light:text-gray-800 dark:text-white ">
-                  {user._id}
-                </td>
-                <td className="px-4 py-3  text-sm light:text-gray-800 dark:text-white ">
-                  {user.name}
-                </td>
-                <td className="px-4 py-3  text-sm light:text-gray-800 dark:text-white ">
-                  {user.email}
-                </td>
-                <td className="px-4 py-3  text-sm light:text-gray-800 dark:text-white ">
-                  {user.role}
-                </td>
-                <td className="px-4 py-3  text-sm light:text-gray-800 dark:text-white ">
-                  <span
-                    className={
-                      user.isBlocked
-                        ? "text-red-500 font-semibold"
-                        : "text-green-500 font-semibold"
-                    }
-                  >
-                    {user.isBlocked ? "Blocked" : "Active"}
-                  </span>
-                </td>
-                <td className="px-4 py-3 flex justify-center items-center">
-                  <button
-                    onClick={() => blockUser(user._id)}
-                    className={`px-4 py-2 cursor-pointer rounded-full text-gray-800 text-sm dark:text-white font-semibold shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-400
+        <div className="max-h-[500px] overflow-y-auto">
+          <table className="min-w-full text-base rounded-xl overflow-hidden">
+            <thead className="border-b sticky top-0 light:bg-gray-200 dark:bg-gray-900/90 dark:border-amber-400 bg-white/80 dark:bg-gray-800/80">
+              <tr>
+                <th className="px-4 py-3  text-md light:text-gray-800 dark:text-white tracking-wide">
+                  ID
+                </th>
+                <th className="px-4 py-3  text-md light:text-gray-800 dark:text-white tracking-wide">
+                  Name
+                </th>
+                <th className="px-4 py-3  text-md light:text-gray-800 dark:text-white tracking-wide">
+                  Email
+                </th>
+                <th className="px-4 py-3  text-md light:text-gray-800 dark:text-white tracking-wide">
+                  Role
+                </th>
+                <th className="px-4 py-3  text-md light:text-gray-800 dark:text-white tracking-wide">
+                  Status
+                </th>
+                <th className="px-4 py-3  text-md light:text-gray-800 dark:text-white tracking-wide">
+                  Action
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {userDs.map((user) => (
+                <tr
+                  key={user._id}
+                  className="border-b dark:border-gray-700 hover:bg-yellow-50 dark:hover:bg-gray-900/70 transition-colors duration-200 "
+                >
+                  <td className="px-4 py-3  text-sm light:text-gray-800 dark:text-white ">
+                    {user._id}
+                  </td>
+                  <td className="px-4 py-3  text-sm light:text-gray-800 dark:text-white ">
+                    {user.name}
+                  </td>
+                  <td className="px-4 py-3  text-sm light:text-gray-800 dark:text-white ">
+                    {user.email}
+                  </td>
+                  <td className="px-4 py-3  text-sm light:text-gray-800 dark:text-white ">
+                    {user.role}
+                  </td>
+                  <td className="px-4 py-3  text-sm light:text-gray-800 dark:text-white ">
+                    <span
+                      className={
+                        user.isBlocked
+                          ? "text-red-500 font-semibold"
+                          : "text-green-500 font-semibold"
+                      }
+                    >
+                      {user.isBlocked ? "Blocked" : "Active"}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 flex justify-center items-center">
+                    <button
+                      onClick={() => blockUser(user._id)}
+                      className={`px-4 py-2 cursor-pointer rounded-full text-gray-800 text-sm dark:text-white font-semibold shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-400
       ${
         user.isBlocked
           ? "bg-green-600 hover:bg-green-700"
           : "bg-red-600 hover:bg-red-700"
       }`}
-                  >
-                    {user.isBlocked ? "Unblock" : "Block"}
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                    >
+                      {user.isBlocked ? "Unblock" : "Block"}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

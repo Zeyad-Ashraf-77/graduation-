@@ -3,11 +3,13 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import type { SubCategoryType } from "../Interfaces/Interfaces";
 
 export default function SubCategory() {
-  const [subCategory, setSubCategory] = useState([]);
+  const [subCategory, setSubCategory] = useState<SubCategoryType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { id } = useParams();
+  
   async function getSubCategory(id: string) {
     try {
       setIsLoading(true);
@@ -31,6 +33,7 @@ export default function SubCategory() {
       getSubCategory(id);
     }
   }, [id]);
+  
   if (isLoading) {
     return (
       <div className="h-screen light:bg-amber-50 dark:bg-gray-900 flex items-center justify-center">
@@ -38,14 +41,16 @@ export default function SubCategory() {
       </div>
     );
   }
+  
   return (
-    <div className="py-10 container mx-auto dark:bg-gray-900">
+    <div className="dark:bg-gray-900 text-gray-800 dark:text-gray-200 pt-4 sm:pt-6 md:pt-10 font-sans min-h-screen">
+    <div className="min-h-screen pt-28  container mx-auto dark:bg-gray-900">
       <ToastContainer />
-      <h1 className="mt-28 dark:text-amber-500 md:text-4xl font-bold text-center mb-10">
+      <h1 className=" dark:text-amber-500 md:text-4xl font-bold text-center mb-10">
         Sub Category
       </h1>
       <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {subCategory.map((subCategory: any) => (
+        {subCategory.map((subCategory: SubCategoryType) => (
           <figure
             key={subCategory._id}
             className="relative rounded-2xl shadow-xl shadow-yellow-600 hover:scale-105 max-w-sm transition-all duration-300 cursor-pointer filter hover:grayscale-0"
@@ -64,7 +69,8 @@ export default function SubCategory() {
               <p className="font-bold text-center">{subCategory.name}</p>
             </figcaption>
           </figure>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );

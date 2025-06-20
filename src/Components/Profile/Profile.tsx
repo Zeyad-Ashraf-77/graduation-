@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { User } from "../Interfaces/Interfaces";
 import { motion } from "framer-motion"; // ← تمت الإضافة
-
+  
 const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
@@ -16,7 +16,7 @@ const Profile = () => {
       })
       .then((res) => {
         setUser(res.data.user);
-        console.log(res.data.user);
+
         setLoading(false);
       })
       .catch((err) => {

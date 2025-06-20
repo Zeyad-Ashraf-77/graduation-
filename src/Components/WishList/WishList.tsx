@@ -5,6 +5,7 @@ import { Product } from "../Interfaces/Interfaces";
 import { motion } from "framer-motion"; // ← تمت الإضافة
 import { FaSpinner, FaStar } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { useCart } from "../Context/CartContext";
 
 const Wishlist: React.FC = () => {
   const [wishlist, setWishlist] = useState<Product[]>([]);
@@ -13,6 +14,8 @@ const Wishlist: React.FC = () => {
     string | null
   >(null);
   const navigate = useNavigate();
+  const { refreshCart } = useCart();
+
   async function gitWishList() {
     try {
       const { data } = await axios.get(
@@ -48,6 +51,7 @@ const Wishlist: React.FC = () => {
         }
       );
       console.log(data);
+      refreshCart();
       toast.success("Product added to cart successfully!", {
         position: "bottom-right",
         autoClose: 3000,

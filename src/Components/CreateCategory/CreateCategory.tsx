@@ -11,6 +11,10 @@ interface Category {
   _id: string;
   name: string;
   secure_url: string;
+  image: {
+    secure_url: string;
+  };
+  userId: string;
 }
 
 interface FormValues {
@@ -30,7 +34,7 @@ import { useRef } from "react";
 
 export default function CreateCategory() {
   const formSectionRef = useRef<HTMLDivElement>(null);
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
@@ -212,9 +216,9 @@ async function getCategories(){
     } catch (error) {
       console.error("Error creating category:", error);
 
-      if (error.response) {
+      if (error instanceof Error) {
         setErrorMessage(
-          error.response.data.message || "Error creating category. Please try again."
+          error.message || "Error creating category. Please try again."
         );
       } else if (error.request) {
         setErrorMessage(
@@ -382,7 +386,7 @@ async function getCategories(){
 
                     className="w-full h-48 object-cover"
                     alt={category.name}
-             
+
                   />
                   
                 </div>

@@ -55,7 +55,7 @@ export default function Coupon() {
       <ToastContainer />
       <form
         onSubmit={formik.handleSubmit}
-        className="p-6 space-y-5 bg-gray-100 rounded-2xl shadow-lg max-w-xl mx-auto mt-28  "
+        className="p-6 space-y-5 bg-[#efebd9] shadow-xl shadow-amber-400 rounded-2xl max-w-xl mx-auto mt-28  "
       >
         <h2 className="text-center  font-bold text-yellow-700 dark:text-yellow-500">
           Create Coupon
@@ -73,7 +73,7 @@ export default function Coupon() {
             type="text"
             name="code"
             id="code"
-            className="bg-yellow-50 border border-yellow-500 text-yellow-900 dark:text-yellow-400 placeholder-yellow-700 dark:placeholder-yellow-500 text-sm rounded-lg focus:ring-yellow-500 focus:border-yellow-500 block w-full p-2.5 dark:bg-gray-700 dark:border-yellow-500"
+            className=" border border-yellow-500 text-yellow-900 dark:text-yellow-400 placeholder-yellow-700 dark:placeholder-yellow-500 text-sm rounded-lg focus:ring-yellow-500 focus:border-yellow-500 block w-full p-2.5 dark:bg-gray-700 dark:border-yellow-500"
             placeholder="Enter Coupon Code"
           />
         </div>
@@ -89,7 +89,7 @@ export default function Coupon() {
             type="number"
             name="amount"
             id="amount"
-            className="bg-yellow-50 border border-yellow-500 text-yellow-900 dark:text-yellow-400 placeholder-yellow-700 dark:placeholder-yellow-500 text-sm rounded-lg focus:ring-yellow-500 focus:border-yellow-500 block w-full p-2.5 dark:bg-gray-700 dark:border-yellow-500"
+            className=" border border-yellow-500 text-yellow-900 dark:text-yellow-400 placeholder-yellow-700 dark:placeholder-yellow-500 text-sm rounded-lg focus:ring-yellow-500 focus:border-yellow-500 block w-full p-2.5 dark:bg-gray-700 dark:border-yellow-500"
             placeholder="Enter Discount"
           />
         </div>
@@ -105,7 +105,7 @@ export default function Coupon() {
             type="date"
             name="fromDate"
             id="fromDate"
-            className="bg-yellow-50 border border-yellow-500 text-yellow-900 dark:text-yellow-400 placeholder-yellow-700 dark:placeholder-yellow-500 text-sm rounded-lg focus:ring-yellow-500 focus:border-yellow-500 block w-full p-2.5 dark:bg-gray-700 dark:border-yellow-500"
+            className=" border border-yellow-500 text-yellow-900 dark:text-yellow-400 placeholder-yellow-700 dark:placeholder-yellow-500 text-sm rounded-lg focus:ring-yellow-500 focus:border-yellow-500 block w-full p-2.5 dark:bg-gray-700 dark:border-yellow-500"
             placeholder="Enter From Date"
           />
         </div>
@@ -121,7 +121,7 @@ export default function Coupon() {
             type="date"
             name="toDate"
             id="toDate"
-            className="bg-yellow-50 border border-yellow-500 text-yellow-900 dark:text-yellow-400 placeholder-yellow-700 dark:placeholder-yellow-500 text-sm rounded-lg focus:ring-yellow-500 focus:border-yellow-500 block w-full p-2.5 dark:bg-gray-700 dark:border-yellow-500"
+            className=" border border-yellow-500 text-yellow-900 dark:text-yellow-400 placeholder-yellow-700 dark:placeholder-yellow-500 text-sm rounded-lg focus:ring-yellow-500 focus:border-yellow-500 block w-full p-2.5 dark:bg-gray-700 dark:border-yellow-500"
             placeholder="Enter To Date"
           />
         </div>

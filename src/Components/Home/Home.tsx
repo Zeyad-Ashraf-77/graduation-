@@ -7,9 +7,18 @@ import imageAbout from "../../assets/images/pin/hero2.webp";
 import ProductListPage from "../Product/Product";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import CartWidget from "../Cart/CartWidget";
+
+interface Category {
+  _id: string;
+  name: string;
+  image: {
+    secure_url: string;
+  };
+}
 
 export default function HomePage() {
-  const [category, setCategory] = useState([]);
+  const [category, setCategory] = useState<Category[]>([]);
   const navigate = useNavigate();
   async function getCategory() {
     try {
@@ -80,6 +89,8 @@ export default function HomePage() {
           </div>
         </div>
 
+        <CartWidget />
+
         <motion.section
           className="py-16 px-4 mb-4 light:bg-[#cfc0a2] category dark:bg-amber-50/50"
           variants={fadeUpVariant}
@@ -87,8 +98,8 @@ export default function HomePage() {
           whileInView="visible"
           viewport={{ once: true, amount: 0.3 }}
         >
-          <h2 className=" font-bold light:text-gray-800 dark:text-gray-100 text-center mb-10">
-            Browse by Category
+          <h2 className=" font-bold light:text-gray-800  dark:text-gray-100 text-center mb-10">
+            Categories
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {category.map((cat) => (
@@ -162,7 +173,7 @@ export default function HomePage() {
                   key={id}
                   className="light:bg-[#fdf9f4] dark:bg-amber-50/50 p-6 rounded-lg shadow-lg border light:border-gray-100 dark:border-amber-500"
                 >
-                  <div className="w-16 h-16 light:bg-gray-300 dark:bg-gray-600/30 dark:border dark:border-gray-500/30">
+                  <div className="w-16 h-16 light:bg-gray-300  dark:border dark:border-gray-500/30">
                     <img
                       src={image5}
                       className="w-full h-full object-cover rounded-full"

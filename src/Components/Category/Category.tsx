@@ -14,7 +14,7 @@ export default function Category() {
       const { data } = await axios.get(`https://project1-kohl-iota.vercel.app/category`, {
         headers: { Authorization: localStorage.getItem("authorization") },
       });
-      console.log(data.categories);
+      
       setCategory(data.categories);
     } catch (error) {
       console.error("Error fetching categories:", error);

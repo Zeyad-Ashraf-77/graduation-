@@ -5,6 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { CartItem } from "../Interfaces/Interfaces";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion"; // ✅ Framer Motion
+import { useCart } from "../Context/CartContext";
 
 const Cart = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -12,6 +13,7 @@ const Cart = () => {
   const [productLength, setProductLength] = useState(0);
   const [isLoadingDelete, setIsLoadingDelete] = useState(false);
   const navigate = useNavigate();
+  const { refreshCart } = useCart();
 
   async function getCart() {
     try {
@@ -58,6 +60,7 @@ const Cart = () => {
         }
       );
       getCart();
+      refreshCart();
       toast.success("Quantity updated successfully!", {
         position: "bottom-right",
         autoClose: 3000,
@@ -96,6 +99,7 @@ const Cart = () => {
       });
       setTimeout(() => {
         getCart();
+        refreshCart();
       }, 1000);
       toast.success("Item deleted successfully!", {
         position: "bottom-right",
@@ -133,6 +137,7 @@ const Cart = () => {
         },
       });
       getCart();
+      refreshCart();
       toast.success("Cart cleared successfully!", {
         position: "bottom-right",
         autoClose: 3000,

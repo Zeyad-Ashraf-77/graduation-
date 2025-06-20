@@ -5,6 +5,7 @@ import { FaCartArrowDown, FaHeart, FaSpinner, FaStar } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
 import { ProductDetailsProps } from "../Interfaces/Interfaces";
 import { motion } from "framer-motion";
+import { useCart } from "../Context/CartContext";
 
 const fadeUpVariant = {
   hidden: { opacity: 0, y: 50 },
@@ -20,6 +21,24 @@ const ProductDetails: React.FC = () => {
   const [product, setProduct] = useState<ProductDetailsProps | null>(null);
   const [isLoadingButton, setIsLoadingButton] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const { refreshCart } = useCart();
+
+  // Function to handle image click
+  const handleImageClick = (index: number) => {
+    setCurrentImageIndex(index);
+  };
+
+  // Get current image to display
+  const getCurrentImage = () => {
+    if (!product) return "";
+
+    if (currentImageIndex === 0) {
+      return product.imageCover.secure_url;
+    } else {
+      return product.images[currentImageIndex - 1].secure_url;
+    }
+  };
 
   async function addToWishlist(productId: string) {
     try {
@@ -60,6 +79,7 @@ const ProductDetails: React.FC = () => {
         }
       );
       console.log(data);
+      refreshCart();
       toast.success("Product added to cart successfully!", {
         position: "top-center",
         autoClose: 2000,
@@ -126,8 +146,10 @@ const ProductDetails: React.FC = () => {
   }
 
   return (
-    <>
-      <h1 className=" mt-28  font-bold text-center">Product Details</h1>
+    <div className="dark:bg-gray-900 light:bg-white text-gray-800 dark:text-gray-200 py-8 sm:pt-6 font-sans min-h-screen">
+      <h1 className=" mt-20 dark:text-white  font-bold text-center">
+        Product Details
+      </h1>
       <motion.div
         className="max-w-7xl  mx-auto px-4 py-10 grid grid-cols-1 lg:grid-cols-2 gap-10"
         initial="hidden"
@@ -145,19 +167,33 @@ const ProductDetails: React.FC = () => {
           <ToastContainer />
           <div className="w-full h-[350px] sm:h-[400px] rounded-lg overflow-hidden">
             <img
-              src={product.imageCover.secure_url}
+              src={getCurrentImage()}
               alt={product.name}
               className="w-full h-full object-cover"
             />
           </div>
           <div className="flex gap-3 mt-4 overflow-x-auto">
+            {/* Main cover image thumbnail */}
+            <motion.img
+              src={product.imageCover.secure_url}
+              alt="Main Image"
+              className={`w-20 h-20 object-cover border rounded-md cursor-pointer hover:ring-2 hover:ring-[#6B4E35] ${
+                currentImageIndex === 0 ? "ring-2 ring-[#6B4E35]" : ""
+              }`}
+              variants={fadeUpVariant}
+              onClick={() => handleImageClick(0)}
+            />
+            {/* Additional images thumbnails */}
             {product.images.map((img, i) => (
               <motion.img
                 key={i}
                 src={img.secure_url}
                 alt={`Thumbnail ${i + 1}`}
-                className="w-20 h-20 object-cover border rounded-md cursor-pointer hover:ring-2 hover:ring-[#6B4E35]"
+                className={`w-20 h-20 object-cover border rounded-md cursor-pointer hover:ring-2 hover:ring-[#6B4E35] ${
+                  currentImageIndex === i + 1 ? "ring-2 ring-[#6B4E35]" : ""
+                }`}
                 variants={fadeUpVariant}
+                onClick={() => handleImageClick(i + 1)}
               />
             ))}
           </div>
@@ -168,8 +204,10 @@ const ProductDetails: React.FC = () => {
           className="space-y-4 text-gray-800"
           variants={fadeUpVariant}
         >
-          <h2 className="text-3xl font-bold">{product.name}</h2>
-          <p className="text-gray-600">{product?.describtion}</p>
+          <h2 className="text-3xl font-bold dark:text-white">{product.name}</h2>
+          <p className="light:text-gray-600 dark:text-white">
+            {product?.describtion}
+          </p>
 
           <p className="text-2xl font-semibold text-red-700 line-through ">
             ${product.price.toFixed(2)} No Discount
@@ -178,7 +216,7 @@ const ProductDetails: React.FC = () => {
             ${product.subPrice.toFixed(2)} With Discount{" "}
           </p>
 
-          <p className="text-sm">
+          <p className="text-sm dark:text-white">
             Availability:{" "}
             <span
               className={
@@ -212,12 +250,12 @@ const ProductDetails: React.FC = () => {
             <button
               disabled={isLoadingButton}
               onClick={() => addToWishlist(product._id)}
-              className="border border-gray-400 hover:bg-gray-100 flex items-center justify-center transition px-6 py-2 rounded-md font-medium text-gray-800"
+              className="border border-gray-400 hover:bg-black flex items-center justify-center transition px-6 py-2 rounded-md font-medium text-gray-800"
             >
               {isLoadingButton ? (
                 <FaSpinner className="animate-spin" />
               ) : (
-                <span className="flex items-center gap-1">
+                <span className="flex items-center gap-1 dark:text-white">
                   {" "}
                   Add to Wishlist <FaHeart />{" "}
                 </span>
@@ -229,25 +267,26 @@ const ProductDetails: React.FC = () => {
             className="text-sm mt-6 space-y-1 text-gray-700"
             variants={fadeUpVariant}
           >
-            <p className="flex items-center gap-1 ">
-              <span className="font-medium ">Rate:</span>{" "}
+            <p className="flex items-center gap-1 dark:text-white">
+              <span className="font-medium dark:text-white">Rate:</span>{" "}
               {product.avgRating || "N/A"} <FaStar className="text-amber-400" />
             </p>
-            <p>
-              <span className="font-medium">Brand:</span>{" "}
+            <p className="dark:text-white">
+              <span className="font-medium dark:text-white">Brand:</span>{" "}
               {product.brand.name || "N/A"}
             </p>
-            <p>
-              <span className="font-medium">Category:</span>{" "}
+            <p className="dark:text-white">
+              <span className="font-medium dark:text-white">Category:</span>{" "}
               {product.category.name || "N/A"}
             </p>
-            <p>
-              <span className="font-medium">Handmade:</span> Yes
+            <p className="dark:text-white">
+              <span className="font-medium dark:text-white ">Handmade:</span>{" "}
+              Yes
             </p>
           </motion.div>
         </motion.div>
       </motion.div>
-    </>
+    </div>
   );
 };
 

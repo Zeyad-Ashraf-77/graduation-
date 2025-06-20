@@ -15,12 +15,14 @@ import { User } from "../Interfaces/Interfaces";
 import axios from "axios";
 import { CgProfile } from "react-icons/cg";
 import { Link } from "react-router-dom";
+import { useCart } from "../Context/CartContext";
 
 export default function Navbar() {
   const navigate = useNavigate();
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const { cartCount } = useCart();
 
   const [user, setUser] = useState<User | null>(null);
 
@@ -75,7 +77,7 @@ export default function Navbar() {
   return (
     <>
       <div className="container mx-auto">
-        <nav className=" mt-3 p-1 fixed top-0 z-50 w-[90%] rounded-3xl border-gray-200 bg-black text-white dark:bg-white/70 dark:border-gray-700">
+        <nav className=" mt-3 p-1 fixed shadow-md shadow-amber-400 top-0 z-50 w-[90%] rounded-3xl border-gray-200 bg-black text-white dark:bg-white/70 dark:border-gray-700">
           <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto px-4 py-2">
             <div className="flex items-center space-x-3 rtl:space-x-reverse">
               <Link
@@ -141,21 +143,19 @@ export default function Navbar() {
                           Brands
                         </NavLink>
                       </li>
-                      <li>
-                        <Link
-                          to="/ #about"
-                          className="block py-0 px-text-white font-medium rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-w md:p-0 dark:text-white md:dark:hover:text-amber-500 dark:hover:bgw dark:hover:text-white md:dark:hover:bg-transparent navbar-link-darkmode"
-                        >
-                          About
-                        </Link>
-                      </li>
+
                       <li>
                         <NavLink
                           to="/cart"
-                          className="block py-0 px-text-white font-medium rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-700 md:p-0 dark:text-white md:dark:hover:text-amber-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent navbar-link-darkmode"
+                          className="block py-0 px-text-white font-medium rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-700 md:p-0 dark:text-white md:dark:hover:text-amber-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent navbar-link-darkmode relative"
                         >
-                          <div className=" p-1 rounded-full">
-                            <FaCartArrowDown className="text-2xl light:text-white dark:text-black   " />
+                          <div className=" p-1 rounded-full relative">
+                            <FaCartArrowDown className="text-2xl light:text-white dark:text-black" />
+                            {cartCount > 0 && (
+                              <div className="absolute -top-2 -right-2 w-5 h-5 bg-red-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                                {cartCount}
+                              </div>
+                            )}
                           </div>
                         </NavLink>
                       </li>
@@ -309,9 +309,16 @@ export default function Navbar() {
                         <li>
                           <NavLink
                             to="/cart"
-                            className="block py-0 px-3 text-gray-900 font-medium rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-700 md:p-0 dark:text-white md:dark:hover:text-amber-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                            className="block py-0 px-3 text-gray-900 font-medium rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-700 md:p-0 dark:text-white md:dark:hover:text-amber-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent relative"
                           >
-                            Cart
+                            <div className="flex items-center gap-2">
+                              <span>Cart</span>
+                              {cartCount > 0 && (
+                                <div className="w-5 h-5 bg-red-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                                  {cartCount}
+                                </div>
+                              )}
+                            </div>
                           </NavLink>
                         </li>
                         <li>

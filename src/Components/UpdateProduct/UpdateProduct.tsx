@@ -210,11 +210,11 @@ export default function UpdateProduct() {
   }, [formik.values.category]);
 
   return (
-    <>
+    <div className="dark:bg-gray-900 light:bg-white text-gray-800 dark:text-gray-200 py-8 sm:pt-6 font-sans min-h-screen">
       <ToastContainer />
       <form
         onSubmit={formik.handleSubmit}
-        className="max-w-xl mt-32 mx-auto p-6 bg-[#f9f9f6] rounded-2xl shadow-lg space-y-5 border border-gray-300"
+        className="max-w-xl mt-20 mx-auto p-6 bg-[#f9f9f6]  rounded-2xl shadow-lg space-y-5 border border-gray-300"
       >
         <h2 className="font-bold mb-4 text-center text-[#a9690a]">
           Update Product
@@ -386,6 +386,6 @@ export default function UpdateProduct() {
           )}
         </button>
       </form>
-    </>
+    </div>
   );
 }

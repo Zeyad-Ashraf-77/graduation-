@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useFormik } from "formik";
 import axios from "axios";
-import { FormValues } from "../Interfaces/Interfaces";
+import { FormValuesLogin } from "../Interfaces/Interfaces";
 import * as Yup from "yup";
 import { Link, useNavigate } from "react-router-dom";
 import image1 from "../../assets/images/pin/hero2.webp";
@@ -11,7 +11,7 @@ export default function Register() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  async function handleSubmit(values: FormValues) {
+  async function handleSubmit(values: FormValuesLogin) {
     setIsLoading(true);
     try {
       const { data } = await axios.post(
@@ -45,11 +45,10 @@ export default function Register() {
       .email("Invalid email address")
       .required("email is Required"),
     password: Yup.string()
-      .min(6, "Password must be at least 6 characters")
+      .min(9, "Password must be at least 9 characters")
       .required(" password is Required"),
   });
-
-  const formik = useFormik({
+  const formik = useFormik<FormValuesLogin>({
     initialValues: {
       email: "",
       password: "",
