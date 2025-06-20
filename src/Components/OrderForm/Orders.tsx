@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { FaEye, FaSpinner, FaTimes } from "react-icons/fa";
 import { MdClose } from "react-icons/md";
@@ -56,11 +56,12 @@ export default function Orders() {
       );
 
       setOrders(data.orders);
-    } catch (err: any) {
+    } catch (err) {
       console.error("Error fetching orders:", err);
       setError(
-        err.response?.data?.message ||
-          "Failed to fetch orders. Please try again."
+        err instanceof Error
+          ? err.message
+          : "An unexpected error occurred while fetching orders."
       );
     } finally {
       setIsLoading(false);
@@ -88,7 +89,7 @@ export default function Orders() {
       // Set the detailed order data
       setSelectedOrder(data.order || order);
       setShowDetails(true);
-    } catch (err: any) {
+    } catch (err) {
       console.error("Error fetching order details:", err);
       // If there's an error, still show the modal with the basic order info we already have
       setSelectedOrder(order);
