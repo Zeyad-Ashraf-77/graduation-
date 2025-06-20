@@ -50,39 +50,39 @@ export default function CreateBrand() {
   });
 
   // Fetch categories and brands
+  const fetchCategories = async () => {
+    try {
+      const { data } = await axios.get<{ categories: Category[] }>(
+        "https://project1-kohl-iota.vercel.app/category",
+        {
+          headers: { Authorization: localStorage.getItem("authorization") || "" },
+        }
+      );
+      setCategories(data.categories);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      setErrorMessage("Failed to load categories");
+      toast.error("Failed to load categories");
+    }
+  };
+
+  const fetchBrands = async () => {
+    try {
+      const { data } = await axios.get<{ brands: Brand[] }>(
+        "https://project1-kohl-iota.vercel.app/brand",
+        {
+          headers: { Authorization: localStorage.getItem("authorization") || "" },
+        }
+      );
+      setBrands(data.brands);
+    } catch (error) {
+      console.error("Error fetching brands:", error);
+      setErrorMessage("Failed to load brands");
+      toast.error("Failed to load brands");
+    }
+  };
+
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const { data } = await axios.get<{ categories: Category[] }>(
-          "https://project1-kohl-iota.vercel.app/category",
-          {
-            headers: { Authorization: localStorage.getItem("authorization") || "" },
-          }
-        );
-        setCategories(data.categories);
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-        setErrorMessage("Failed to load categories");
-        toast.error("Failed to load categories");
-      }
-    };
-
-    const fetchBrands = async () => {
-      try {
-        const { data } = await axios.get<{ brands: Brand[] }>(
-          "https://project1-kohl-iota.vercel.app/brand",
-          {
-            headers: { Authorization: localStorage.getItem("authorization") || "" },
-          }
-        );
-        setBrands(data.brands);
-      } catch (error) {
-        console.error("Error fetching brands:", error);
-        setErrorMessage("Failed to load brands");
-        toast.error("Failed to load brands");
-      }
-    };
-
     const initializeData = async () => {
       setIsLoading(true);
       try {
@@ -94,7 +94,6 @@ export default function CreateBrand() {
         setIsLoading(false);
       }
     };
-
     initializeData();
   }, []);
 
@@ -144,16 +143,15 @@ export default function CreateBrand() {
         },
       };
 
-      let response;
       if (editingBrand) {
-        response = await axios.patch<{ brand: Brand }>(
+        await axios.patch<{ brand: Brand }>(
           `https://project1-kohl-iota.vercel.app/brand/update/${editingBrand._id}`,
           formData,
           config
         );
         toast.success("Brand updated successfully!");
       } else {
-        response = await axios.post<{ brand: Brand }>(
+        await axios.post<{ brand: Brand }>(
           "https://project1-kohl-iota.vercel.app/brand/create",
           formData,
           config
@@ -161,16 +159,8 @@ export default function CreateBrand() {
         toast.success("Brand created successfully!");
       }
 
-      // Update the brands list
-      if (editingBrand) {
-        setBrands(prevBrands =>
-          prevBrands.map(brand =>
-            brand._id === editingBrand._id ? response.data.brand : brand
-          )
-        );
-      } else {
-        setBrands(prevBrands => [...prevBrands, response.data.brand]);
-      }
+      // Update the brands list by fetching from server
+      await fetchBrands();
 
       resetForm();
       setEditingBrand(null);
@@ -282,11 +272,11 @@ export default function CreateBrand() {
                       className="block w-full text-sm text-[#4e342e] border-2 border-[#4e342e] rounded-lg p-3 file:mr-4 file:py-2 file:px-6 file:rounded-lg file:border-0 file:bg-[#4e342e] file:text-white hover:file:bg-[#6d4c41] transition"
                       onChange={(event) => {
                         const file = event.currentTarget.files![0];
-                        setFieldValue("file", file);
+                        setFieldValue("image", file);
                       }}
                     />
                     <ErrorMessage
-                      name="file"
+                      name="image"
                       component="div"
                       className="text-red-500 text-sm mt-1"
                     />
@@ -356,54 +346,56 @@ export default function CreateBrand() {
               All Brands
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {brands.map((brand) => (
-                <div
-                  key={brand._id}
-                  className="bg-white rounded-xl shadow-lg overflow-hidden transform transition duration-300 hover:scale-[1.02] hover:shadow-xl"
-                >
-                  <div className="">
-                    <img
-                      src={brand.image?.secure_url}
-                      className="w-full h-48 object-cover"
-                      alt={brand.name}
-                      onError={(e) => {
-                        e.currentTarget.src =
-                          "https://via.placeholder.com/300x200?text=No+Image";
-                      }}
-                    />
-                  </div>
-                  <div className="p-6">
-                    <h5 className="text-xl font-bold text-[#4e342e] mb-4">
-                      {brand.name.toUpperCase()}
-                    </h5>
-                    {localStorage.getItem('id')===brand.userId ? (
-                        <div className="space-y-3">
-                        <button
-                          type="button"
-                          onClick={() => deleteBrand(brand._id)}
-                          className="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg font-medium transition duration-300"
-                        >
-                          Delete
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setEditingBrand(brand)}
-                          className="w-full bg-[#4e342e] hover:bg-[#6d4c41] text-white py-2 px-4 rounded-lg font-medium transition duration-300"
-                        >
-                          Update
-                        </button>
-                      </div>
-                    ):<div>
-                      <p className="text-red-500 text-center p-2 bg-red-100 rounded-2xl ">You are not authorized to delete this brand</p>
-                    </div> }
+              {brands.map((brand) =>
+                brand && brand.image && brand.image.secure_url ? (
+                  <div
+                    key={brand._id}
+                    className="bg-white rounded-xl shadow-lg overflow-hidden transform transition duration-300 hover:scale-[1.02] hover:shadow-xl"
+                  >
+                    <div className="">
+                      <img
+                        src={brand.image.secure_url}
+                        className="w-full h-48 object-cover"
+                        alt={brand.name}
+                        onError={(e) => {
+                          e.currentTarget.src =
+                            "https://via.placeholder.com/300x200?text=No+Image";
+                        }}
+                      />
                     </div>
-                  </div>
-                ))}
-              </div>
+                    <div className="p-6">
+                      <h5 className="text-xl font-bold text-[#4e342e] mb-4">
+                        {brand.name.toUpperCase()}
+                      </h5>
+                      {localStorage.getItem('id')===brand.userId ? (
+                          <div className="space-y-3">
+                          <button
+                            type="button"
+                            onClick={() => deleteBrand(brand._id)}
+                            className="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg font-medium transition duration-300"
+                          >
+                            Delete
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setEditingBrand(brand)}
+                            className="w-full bg-[#4e342e] hover:bg-[#6d4c41] text-white py-2 px-4 rounded-lg font-medium transition duration-300"
+                          >
+                            Update
+                          </button>
+                        </div>
+                      ):<div>
+                        <p className="text-red-500 text-center p-2 bg-red-100 rounded-2xl ">You are not authorized to delete this brand</p>
+                      </div> }
+                      </div>
+                    </div>
+                  ) : null
+              )}
             </div>
           </div>
         </div>
       </div>
+    </div>
   );
-};
+}
 

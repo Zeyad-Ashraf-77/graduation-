@@ -25,9 +25,10 @@ const Wishlist: React.FC = () => {
           },
         }
       );
-      setWishlist(data.data);
+      setWishlist(Array.isArray(data.data) ? data.data : []);
     } catch (error) {
       console.error("Error fetching wishlist:", error);
+      setWishlist([]);
       toast.error("Failed to load wishlist");
     }
   };
@@ -130,7 +131,7 @@ getWishlist();
         My Wishlist
       </h1>
 
-      {wishlist.length === 0 ? (
+      {(!Array.isArray(wishlist) || wishlist.length === 0) ? (
         <div className="text-center">
           <h2 className="font-bold mb-4">Your wishlist is empty</h2>
         </div>

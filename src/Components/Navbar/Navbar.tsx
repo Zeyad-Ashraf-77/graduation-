@@ -143,6 +143,14 @@ export default function Navbar() {
                           Brands
                         </NavLink>
                       </li>
+                      <li>
+                        <NavLink
+                          to="/contactUs"
+                          className="block py-0 px-text-white font-medium rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-w md:p-0 dark:text-white md:dark:hover:text-amber-500 dark:hover:bgw dark:hover:text-white md:dark:hover:bg-transparent navbar-link-darkmode"
+                        >
+                          Contact Us
+                        </NavLink>
+                      </li>
 
                       <li>
                         <NavLink

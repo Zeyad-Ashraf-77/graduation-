@@ -31,6 +31,7 @@ import Coupon from "./Components/Coupon/Coupon";
 import ProtectedRoute from "./Components/ProtectedRoute/ProtectedRoute";
 import BrandDetails from "./Components/BrandDetails/BrandDetails";
 import { CartProvider } from "./Components/Context/CartContext";
+import ContactUs from "./Components/ContactUs/ContactUs";
 
 function App() {
   const router = createBrowserRouter([
@@ -130,6 +131,10 @@ function App() {
         {
           path: "resetPassword",
           element: <ResetPassword />,
+        },
+        {
+          path: "contactUs",
+          element: <ContactUs />,
         },
         {
           path: "brandDetails/:id",
