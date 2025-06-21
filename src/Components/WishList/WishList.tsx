@@ -25,7 +25,7 @@ const Wishlist: React.FC = () => {
           },
         }
       );
-      setWishlist(Array.isArray(data.data) ? data.data : []);
+      setWishlist(Array.isArray(data.user.washlist) ? data.user.washlist : [1,2,3]);
     } catch (error) {
       console.error("Error fetching wishlist:", error);
       setWishlist([]);
