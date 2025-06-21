@@ -21,6 +21,7 @@ export default function ProductListPage() {
   const [wishlist, setWishlist] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoading1, setIsLoading1] = useState(false);
+  const [deletingProductId, setDeletingProductId] = useState<string | null>(null);
   const navigate = useNavigate();
   const { refreshCart } = useCart();
 
@@ -164,7 +165,8 @@ export default function ProductListPage() {
 
   async function deleteProduct(productId: string) {
     try {
-      const { data } = await axios.delete(
+      setDeletingProductId(productId);
+      await axios.delete(
         `https://project1-kohl-iota.vercel.app/product/delete/${productId}`,
         {
           headers: {
@@ -173,7 +175,7 @@ export default function ProductListPage() {
           },
         }
       );
-      console.log(data);
+      getProducts();
       toast.success("Product deleted successfully!");
     } catch (error) {
       console.log("Error deleting product:", error);
@@ -201,7 +203,7 @@ export default function ProductListPage() {
         navigate("/login");
       }
     } finally {
-      setIsLoading1(false);
+      setDeletingProductId(null);
     }
   }
 
@@ -350,7 +352,11 @@ export default function ProductListPage() {
                           onClick={() => deleteProduct(product._id)}
                           className="text-white flex hover:scale-105 transition-all items-center gap-1 rounded-xl sm:rounded-2xl hover:bg-red-800 cursor-pointer px-2 sm:px-3 py-2 sm:py-3 bg-red-200"
                         >
-                          <FaTrash className="text-sm sm:text-base" />
+                          {deletingProductId === product._id ? (
+                            <FaSpinner className="text-sm sm:text-base animate-spin" />
+                          ) : (
+                            <FaTrash className="text-sm sm:text-base" />
+                          )}
                         </div>
                       )}
                     </div>
@@ -365,7 +371,13 @@ export default function ProductListPage() {
                             }
                             className="text-white flex items-center gap-1 rounded-xl sm:rounded-2xl hover:bg-red-800 cursor-pointer px-2 py-2 bg-red-600 text-xs sm:text-sm"
                           >
-                            Delete <FaTrash className="text-xs sm:text-sm" />
+                            {deletingProductId === product._id ? (
+                              <FaSpinner className="text-xs sm:text-sm animate-spin" />
+                            ) : (
+                              <>
+                                Delete <FaTrash className="text-xs sm:text-sm" />
+                              </>
+                            )}
                           </div>
                           <div
                             onClick={() =>
