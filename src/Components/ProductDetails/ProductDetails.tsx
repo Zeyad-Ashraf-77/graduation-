@@ -19,7 +19,8 @@ const fadeUpVariant = {
 const ProductDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [product, setProduct] = useState<ProductDetailsProps | null>(null);
-  const [isLoadingButton, setIsLoadingButton] = useState(false);
+  const [isLoadingCart, setIsLoadingCart] = useState(false);
+  const [isLoadingWishlist, setIsLoadingWishlist] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const { refreshCart } = useCart();
@@ -42,7 +43,7 @@ const ProductDetails: React.FC = () => {
 
   async function addToWishlist(productId: string) {
     try {
-      setIsLoadingButton(true);
+      setIsLoadingWishlist(true);
       const { data } = await axios.patch(
         `https://project1-kohl-iota.vercel.app/product/washlist/${productId}`,
         {},
@@ -59,12 +60,12 @@ const ProductDetails: React.FC = () => {
       console.log("Error adding to wishlist:", error);
       toast.error("Error adding product to wishlist!");
     } finally {
-      setIsLoadingButton(false);
+      setIsLoadingWishlist(false);
     }
   }
   async function addToCart(productId: string) {
     try {
-      setIsLoadingButton(true);
+      setIsLoadingCart(true);
       const { data } = await axios.post(
         `https://project1-kohl-iota.vercel.app/cart/create`,
         {
@@ -106,7 +107,7 @@ const ProductDetails: React.FC = () => {
         toast.error("An error occurred");
       }
     } finally {
-      setIsLoadingButton(false);
+      setIsLoadingCart(false);
     }
   }
   useEffect(() => {
@@ -234,11 +235,11 @@ const ProductDetails: React.FC = () => {
             variants={fadeUpVariant}
           >
             <button
-              disabled={isLoadingButton}
+              disabled={isLoadingCart}
               onClick={() => addToCart(product._id)}
               className="bg-[#6B4E35] hover:bg-[#543e2a] flex items-center justify-center transition text-white px-6 py-2 rounded-md font-medium"
             >
-              {isLoadingButton ? (
+              {isLoadingCart ? (
                 <FaSpinner className="animate-spin" />
               ) : (
                 <span className="flex items-center gap-1">
@@ -248,11 +249,11 @@ const ProductDetails: React.FC = () => {
               )}
             </button>
             <button
-              disabled={isLoadingButton}
+              disabled={isLoadingWishlist}
               onClick={() => addToWishlist(product._id)}
               className="border border-gray-400 hover:bg-black flex items-center justify-center transition px-6 py-2 rounded-md font-medium text-gray-800"
             >
-              {isLoadingButton ? (
+              {isLoadingWishlist ? (
                 <FaSpinner className="animate-spin" />
               ) : (
                 <span className="flex items-center gap-1 dark:text-white">

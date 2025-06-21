@@ -38,7 +38,8 @@ const fadeUpVariant = {
 
 export default function BrandDetails() {
   const [brand, setBrand] = useState<Product[]>([]);
-  const [isLoadingButton, setIsLoadingButton] = useState(false);
+  const [isLoadingCart, setIsLoadingCart] = useState(false);
+  const [isLoadingWishlist, setIsLoadingWishlist] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [currentImageIndices, setCurrentImageIndices] = useState<{ [key: string]: number }>({});
   const navigate = useNavigate();
@@ -66,7 +67,7 @@ export default function BrandDetails() {
 
   async function addToWishlist(productId: string) {
     try {
-      setIsLoadingButton(true);
+      setIsLoadingWishlist(true);
       await axios.patch(
         `https://project1-kohl-iota.vercel.app/product/washlist/${productId}`,
         {},
@@ -83,13 +84,13 @@ export default function BrandDetails() {
       console.log("Error adding to wishlist:", error);
       toast.error("Error adding product to wishlist!");
     } finally {
-      setIsLoadingButton(false);
+      setIsLoadingWishlist(false);
     }
   }
 
   async function addToCart(productId: string) {
     try {
-      setIsLoadingButton(true);
+      setIsLoadingCart(true);
       await axios.post(
         `https://project1-kohl-iota.vercel.app/cart/create`,
         {
@@ -113,7 +114,7 @@ export default function BrandDetails() {
         toast.error("An error occurred");
       }
     } finally {
-      setIsLoadingButton(false);
+      setIsLoadingCart(false);
     }
   }
 
@@ -248,7 +249,7 @@ export default function BrandDetails() {
                 onClick={() => addToCart(item._id)}
                 className="bg-[#6B4E35] hover:bg-[#543e2a] transition text-white px-6 py-2 rounded-md font-medium"
               >
-                {isLoadingButton ? (
+                {isLoadingCart ? (
                   <FaSpinner className="animate-spin" />
                 ) : (
                   <span className="flex items-center gap-1">
@@ -260,7 +261,7 @@ export default function BrandDetails() {
                 onClick={() => addToWishlist(item._id)}
                 className="border border-gray-400 hover:bg-black  transition px-6 py-2 rounded-md font-medium text-gray-800"
               >
-                {isLoadingButton ? (
+                {isLoadingWishlist ? (
                   <FaSpinner className="animate-spin" />
                 ) : (
                   <span className="flex items-center dark:text-white gap-1">
