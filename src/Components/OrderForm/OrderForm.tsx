@@ -60,7 +60,7 @@ const OrderAndPaymentForm: React.FC = () => {
         });
 
         if (values.paymentMethod === "cash") {
-          navigate("/orders");
+          navigate("/allOrder");
         }
       } catch (error) {
         console.error("Error creating order:", error);
