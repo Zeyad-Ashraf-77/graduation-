@@ -118,5 +118,6 @@ export interface User {
   email: string;
   role?: string;
   address?: string;
+  createdAt:string
   image?: { secure_url: string };
 }
