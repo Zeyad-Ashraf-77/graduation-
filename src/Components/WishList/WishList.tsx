@@ -16,7 +16,7 @@ const Wishlist: React.FC = () => {
 
   const getWishlist = async () => {
     try {
-      const { data } = await axios.get<{ data: Array<Product & { subPrice?: number }> }>(
+      const { data } = await axios.get<{ user: { washlist: Array<Product & { subPrice?: number }> } }>(
         `https://project1-kohl-iota.vercel.app/product/r/washlist`,
         {
           headers: {
@@ -25,7 +25,9 @@ const Wishlist: React.FC = () => {
           },
         }
       );
-      setWishlist(Array.isArray(data.user.washlist) ? data.user.washlist : [1,2,3]);
+      console.log();
+      
+      setWishlist(data.user.washlist);
     } catch (error) {
       console.error("Error fetching wishlist:", error);
       setWishlist([]);
