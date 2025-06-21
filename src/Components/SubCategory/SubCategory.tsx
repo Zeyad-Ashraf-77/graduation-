@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import type { SubCategoryType } from "../Interfaces/Interfaces";
+import { Link } from "react-router-dom";
 
 export default function SubCategory() {
   const [subCategory, setSubCategory] = useState<SubCategoryType[]>([]);
@@ -55,7 +56,7 @@ export default function SubCategory() {
             key={subCategory._id}
             className="relative rounded-2xl shadow-xl shadow-yellow-600 hover:scale-105 max-w-sm transition-all duration-300 cursor-pointer filter hover:grayscale-0"
           >
-            <a href="/product">
+            <Link to="/product">
               <img
                 className="rounded-lg min-w-[400px] min-h-[400px] max-w-[400px] max-h-[400px] object-cover "
                 src={
@@ -64,7 +65,7 @@ export default function SubCategory() {
                 }
                 alt="image description"
               />
-            </a>
+            </Link>
             <figcaption className="absolute px-4 text-lg text-white bottom-6">
               <p className="font-bold text-center">{subCategory.name}</p>
             </figcaption>
